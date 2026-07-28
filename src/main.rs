@@ -10,7 +10,7 @@ use kobra::types::{Mode, Severity};
 use std::sync::Arc;
 
 #[derive(Parser)]
-#[command(name = "kobra", version, about = "KOBRA v1.3 — YAML/JSON template system + output resilience")]
+#[command(name = "kobra", version, about = "KOBRA v1.4 — headless browser DOM XSS + SPA crawl + template system")]
 struct Cli {
     /// Target URL(s). Comma-separated for multiple.
     #[arg(short, long, value_delimiter = ',')]
@@ -67,6 +67,10 @@ struct Cli {
     /// Template directory for YAML/JSON vulnerability checks.
     #[arg(long)]
     template_dir: Option<String>,
+
+    /// Enable headless browser scan (DOM XSS, SPA crawl). Requires Chrome.
+    #[arg(long)]
+    browser: bool,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
@@ -249,6 +253,21 @@ async fn main() -> anyhow::Result<()> {
 
     // Chain detection — cross-module correlation
     let chains = chain_detect::detect_chains(&all);
+
+    // Headless browser scan (optional, requires Chrome)
+    if cli.browser {
+        if kobra::scan::headless::is_available() {
+            println!("\n[*] === HEADLESS BROWSER SCAN ===");
+            for t in &scan_targets {
+                println!("[*] browser scanning: {}", t);
+                let headless_findings = scan::run_headless(t, mode).await;
+                println!("[+] browser scan: {} finding(s)", headless_findings.len());
+                all.extend(headless_findings);
+            }
+        } else {
+            println!("[-] --browser flag used but Chrome/Chromium not found. Install chromium-browser or google-chrome.");
+        }
+    }
     if !chains.is_empty() {
         println!("\n[*] === ATTACK CHAINS DETECTED ===");
         for c in &chains {

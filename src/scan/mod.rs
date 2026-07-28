@@ -46,6 +46,7 @@ pub mod checkpoint;    // Resume from checkpoint after crash
 pub mod plugin;        // Hot-load custom scan modules from JSON
 pub mod api_discovery; // API endpoint enumeration + OpenAPI/Swagger discovery
 pub mod cors_deep;     // CORS deep scanner (wildcard, reflection, preflight)
+pub mod headless;      // Headless browser — DOM XSS, SPA crawl, JS execution
 
 /// Run all enabled modules against a single URL with a set of parameters.
 /// `oob_host` enables blind-SSRF callback testing (your listener/collaborator).
@@ -118,4 +119,9 @@ pub async fn run_all(
     // Template-based checks
     findings.extend(crate::engine::template::run_templates(http, target, templates, mode).await);
     Ok(findings)
+}
+
+/// Run headless browser scan (separate because it needs Chrome).
+pub async fn run_headless(target: &str, mode: Mode) -> Vec<Finding> {
+    headless::scan_dom_xss(target, mode).await
 }
