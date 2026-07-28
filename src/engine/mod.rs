@@ -8,3 +8,4 @@ pub mod fp_filter;
 pub mod chain_detect;
 pub mod cve_update;
 pub mod template;
+pub mod nuclei_compat;

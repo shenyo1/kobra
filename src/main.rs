@@ -10,7 +10,7 @@ use kobra::types::{Mode, Severity};
 use std::sync::Arc;
 
 #[derive(Parser)]
-#[command(name = "kobra", version, about = "KOBRA v1.7 — beginner-friendly safe mode + simple ID output")]
+#[command(name = "kobra", version, about = "KOBRA v1.8 — nuclei compat + multi-session IDOR + tech fingerprint")]
 struct Cli {
     /// Target URL(s). Comma-separated for multiple.
     #[arg(short, long, value_delimiter = ',')]
@@ -104,6 +104,14 @@ struct Cli {
     /// Skip safety confirmation (for automation/CI).
     #[arg(long)]
     no_confirm: bool,
+
+    /// Nuclei templates directory (auto-convert to KOBRA format).
+    #[arg(long)]
+    nuclei_dir: Option<String>,
+
+    /// Second auth session for IDOR testing. Format: "url|body"
+    #[arg(long)]
+    auth2: Option<String>,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
@@ -262,6 +270,16 @@ async fn main() -> anyhow::Result<()> {
         println!("[+] loaded {} template(s)", templates.len());
     }
 
+    // Load nuclei templates if --nuclei-dir provided
+    let mut all_templates = templates;
+    if let Some(dir) = &cli.nuclei_dir {
+        println!("[*] loading nuclei templates from {}...", dir);
+        let nuclei_templates = kobra::engine::nuclei_compat::load_nuclei_dir(dir);
+        println!("[+] converted {} nuclei template(s) to KOBRA format", nuclei_templates.len());
+        all_templates.extend(nuclei_templates);
+    }
+    let templates = all_templates;
+
     // CVE update if --cve-update
     if cli.cve_update {
         println!("[*] fetching CVE feed...");
@@ -383,6 +401,44 @@ async fn main() -> anyhow::Result<()> {
             println!("[-] --browser flag used but Chrome/Chromium not found. Install chromium-browser or google-chrome.");
         }
     }
+    // Multi-session IDOR testing (requires --auth and --auth2)
+    if let Some(auth2_str) = &cli.auth2 {
+        if cli.auth.is_some() {
+            println!("\n[*] === MULTI-SESSION IDOR TEST ===");
+            // Build second HTTP client with auth2 credentials
+            let mut http_b = HttpClient::new(conc, cli.timeout)?;
+            if let Some(pipe_pos) = auth2_str.find('|') {
+                let auth2_url = &auth2_str[..pipe_pos];
+                let auth2_body = &auth2_str[pipe_pos+1..];
+                println!("[*] authenticating session B at: {}", auth2_url);
+                match http_b.fetch(auth2_url, reqwest::Method::POST, Some(auth2_body), None).await {
+                    Ok((st, _h, body, _f)) => {
+                        println!("[+] auth2 response: HTTP {}", st);
+                        let mut auth2_headers: Vec<(String, String)> = Vec::new();
+                        if let Ok(json) = serde_json::from_str::<serde_json::Value>(&body) {
+                            if let Some(token) = json.get("token").and_then(|t| t.as_str()) {
+                                auth2_headers.push(("Authorization".into(), format!("Bearer {}", token)));
+                            } else if let Some(access) = json.get("access_token").and_then(|t| t.as_str()) {
+                                auth2_headers.push(("Authorization".into(), format!("Bearer {}", access)));
+                            }
+                        }
+                        http_b.apply_auth(auth2_headers, None);
+                    }
+                    Err(e) => eprintln!("[-] auth2 request failed: {}", e),
+                }
+            }
+            // Run IDOR comparison
+            for t in &scan_targets {
+                println!("[*] IDOR testing: {}", t);
+                let idor_findings = scan::idor::scan(&http, &http_b, t).await;
+                println!("[+] IDOR test: {} finding(s)", idor_findings.len());
+                all.extend(idor_findings);
+            }
+        } else {
+            println!("[-] --auth2 requires --auth (need two sessions for IDOR comparison)");
+        }
+    }
+
     if !chains.is_empty() {
         println!("\n[*] === ATTACK CHAINS DETECTED ===");
         for c in &chains {
