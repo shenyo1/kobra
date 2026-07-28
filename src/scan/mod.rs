@@ -47,6 +47,7 @@ pub mod plugin;        // Hot-load custom scan modules from JSON
 pub mod api_discovery; // API endpoint enumeration + OpenAPI/Swagger discovery
 pub mod cors_deep;     // CORS deep scanner (wildcard, reflection, preflight)
 pub mod headless;      // Headless browser — DOM XSS, SPA crawl, JS execution
+pub mod crawler;       // Basic crawler — JS endpoints, sitemap, robots, links
 
 /// Run all enabled modules against a single URL with a set of parameters.
 /// `oob_host` enables blind-SSRF callback testing (your listener/collaborator).
@@ -118,6 +119,20 @@ pub async fn run_all(
     findings.extend(plugin::scan_with_plugins(http, target, plugins).await);
     // Template-based checks
     findings.extend(crate::engine::template::run_templates(http, target, templates, mode).await);
+    // Crawler: discover endpoints + add as findings
+    let discovered = crawler::discover_endpoints(http, target, mode).await;
+    findings.extend(crawler::findings_from_endpoints(&discovered, target));
+    // Feed discovered endpoints into extra params for deeper scan
+    for ep in &discovered {
+        if let Some(path) = ep.split("://").nth(1).and_then(|p| p.split('/').nth(1)) {
+            // Add path segments as potential params
+            for segment in path.split('/') {
+                if !segment.is_empty() && !ps.contains(&segment.to_string()) && segment.len() < 30 {
+                    ps.push(segment.to_string());
+                }
+            }
+        }
+    }
     Ok(findings)
 }
 

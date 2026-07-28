@@ -10,7 +10,7 @@ use kobra::types::{Mode, Severity};
 use std::sync::Arc;
 
 #[derive(Parser)]
-#[command(name = "kobra", version, about = "KOBRA v1.4 — headless browser DOM XSS + SPA crawl + template system")]
+#[command(name = "kobra", version, about = "KOBRA v1.5 — auth session + basic crawler + template system + headless")]
 struct Cli {
     /// Target URL(s). Comma-separated for multiple.
     #[arg(short, long, value_delimiter = ',')]
@@ -71,6 +71,19 @@ struct Cli {
     /// Enable headless browser scan (DOM XSS, SPA crawl). Requires Chrome.
     #[arg(long)]
     browser: bool,
+
+    /// Custom HTTP headers (format: "Key: Value, Key2: Value2")
+    #[arg(long)]
+    header: Option<String>,
+
+    /// Cookie string to include in requests.
+    #[arg(long)]
+    cookie: Option<String>,
+
+    /// Authenticate via login URL (POST with body). Format: "url|body"
+    /// Example: --auth "https://api.example.com/login|username=admin&password=admin"
+    #[arg(long)]
+    auth: Option<String>,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
@@ -99,7 +112,67 @@ async fn main() -> anyhow::Result<()> {
     }
     let mode: Mode = cli.mode.into();
     let conc = cli.concurrency.unwrap_or_else(|| mode.concurrency());
-    let http = Arc::new(HttpClient::new(conc, cli.timeout)?);
+    let mut http = HttpClient::new(conc, cli.timeout)?;
+
+    // Auth session setup
+    let mut auth_headers: Vec<(String, String)> = Vec::new();
+
+    // Parse --header "Key: Value, Key2: Value2"
+    if let Some(h) = &cli.header {
+        for part in h.split(',') {
+            let trimmed = part.trim();
+            if let Some(pos) = trimmed.find(':') {
+                let key = trimmed[..pos].trim().to_string();
+                let val = trimmed[pos+1..].trim().to_string();
+                auth_headers.push((key, val));
+            }
+        }
+    }
+
+    // Parse --auth "url|body"
+    if let Some(auth_str) = &cli.auth {
+        if let Some(pipe_pos) = auth_str.find('|') {
+            let auth_url = &auth_str[..pipe_pos];
+            let auth_body = &auth_str[pipe_pos+1..];
+            println!("[*] authenticating at: {}", auth_url);
+            match http.fetch(auth_url, reqwest::Method::POST, Some(auth_body), None).await {
+                Ok((st, _h, body, _f)) => {
+                    println!("[+] auth response: HTTP {}", st);
+                    // Try to extract token from response
+                    if let Ok(json) = serde_json::from_str::<serde_json::Value>(&body) {
+                        if let Some(token) = json.get("token").and_then(|t| t.as_str()) {
+                            auth_headers.push(("Authorization".into(), format!("Bearer {}", token)));
+                            println!("[+] extracted Bearer token from auth response");
+                        } else if let Some(access) = json.get("access_token").and_then(|t| t.as_str()) {
+                            auth_headers.push(("Authorization".into(), format!("Bearer {}", access)));
+                            println!("[+] extracted access_token from auth response");
+                        } else if let Some(session) = json.get("session").or_else(|| json.get("session_id")).or_else(|| json.get("sid")).and_then(|t| t.as_str()) {
+                            auth_headers.push(("Cookie".into(), format!("session={}", session)));
+                            println!("[+] extracted session cookie from auth response");
+                        }
+                    }
+                    // Fallback: check Set-Cookie header
+                    if !auth_headers.iter().any(|(k,_)| k == "Cookie" || k == "Authorization") {
+                        for line in _h.lines() {
+                            if line.to_lowercase().starts_with("set-cookie:") {
+                                if let Some(cookie_val) = line.split(':').nth(1) {
+                                    let cookie_clean = cookie_val.trim().split(';').next().unwrap_or("").to_string();
+                                    if !cookie_clean.is_empty() {
+                                        println!("[+] captured Set-Cookie: {}", cookie_clean);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Err(e) => eprintln!("[-] auth request failed: {}", e),
+            }
+        }
+    }
+
+    // Apply auth to HTTP client
+    http.apply_auth(auth_headers, cli.cookie.clone());
+    let http = Arc::new(http);
 
     println!(
         "\x1b[95m

@@ -11,6 +11,8 @@ pub struct HttpClient {
     pub sem: Arc<Semaphore>,
     pub timeout: Duration,
     pub user_agent: String,
+    pub extra_headers: Vec<(String, String)>,  // custom headers (auth tokens, etc.)
+    pub cookie: Option<String>,                // custom cookie string
 }
 
 impl HttpClient {
@@ -25,7 +27,15 @@ impl HttpClient {
             sem: Arc::new(Semaphore::new(concurrency.max(1))),
             timeout: Duration::from_secs(timeout_secs),
             user_agent: "kobra/0.1 (all-in-one bb tool)".to_string(),
+            extra_headers: Vec::new(),
+            cookie: None,
         })
+    }
+
+    /// Apply auth headers (Authorization, Cookie, custom headers).
+    pub fn apply_auth(&mut self, headers: Vec<(String, String)>, cookie: Option<String>) {
+        self.extra_headers = headers;
+        self.cookie = cookie;
     }
 
     /// Fetch a URL, return (status, headers, body, final_url).
@@ -37,7 +47,18 @@ impl HttpClient {
         headers: Option<std::collections::HashMap<String, String>>,
     ) -> Result<(u16, String, String, String)> {
         let _permit = self.sem.acquire().await?;
-        let mut req = self.client.request(method, url).header("User-Agent", &self.user_agent);
+        let mut req = self.client.request(method.clone(), url).header("User-Agent", &self.user_agent);
+
+        // Apply custom auth headers
+        for (k, v) in &self.extra_headers {
+            req = req.header(k, v);
+        }
+        // Apply cookie
+        if let Some(c) = &self.cookie {
+            req = req.header("Cookie", c);
+        }
+
+        // Apply per-request headers
         if let Some(h) = headers {
             for (k, v) in h {
                 req = req.header(&k, &v);
@@ -64,7 +85,13 @@ impl HttpClient {
     /// GET returning also a raw response string (headers + body) for report proof.
     pub async fn get_full(&self, url: &str) -> Result<(u16, String, String, String, String)> {
         let _permit = self.sem.acquire().await?;
-        let req = self.client.get(url).header("User-Agent", &self.user_agent);
+        let mut req = self.client.get(url).header("User-Agent", &self.user_agent);
+        for (k, v) in &self.extra_headers {
+            req = req.header(k, v);
+        }
+        if let Some(c) = &self.cookie {
+            req = req.header("Cookie", c);
+        }
         let resp = req.send().await?;
         let status = resp.status().as_u16();
         let final_url = resp.url().to_string();
@@ -74,7 +101,7 @@ impl HttpClient {
         }
         let reason = resp.status().canonical_reason().unwrap_or("").to_string();
         let text = resp.text().await.unwrap_or_default();
-        let raw = format!("HTTP/1.1 {} {}\n{}\n{}\n", status, reason, header_str, text);
+        let raw = format!("HTTP/1.1 {} {}\n{}{}\n", status, reason, header_str, text);
         Ok((status, header_str, text, final_url, raw))
     }
 
