@@ -1,8 +1,0 @@
-HTTP/2 404 
-date: Sun, 26 Jul 2026 22:15:50 GMT
-cf-cache-status: DYNAMIC
-strict-transport-security: max-age=0; includeSubDomains; preload
-x-content-type-options: nosniff
-server: cloudflare
-cf-ray: a216c3ec08d603c6-ICN
-alt-svc: h3=":443"; ma=86400

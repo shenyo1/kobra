@@ -1,1 +1,0 @@
-This API endpoint has been discontinued. Please see https://sslmate.com/help/reference/ct_search_api_v1 for documentation about the replacement API endpoint.

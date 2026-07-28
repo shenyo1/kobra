@@ -1,9 +1,0 @@
-airmanager.wibuku.app	/api-docs	401
-airmanager.wibuku.app	/api-docs/swagger.json	401
-airmanager.wibuku.app	/api/openapi.json	401
-airmanager.wibuku.app	/api/swagger	401
-airmanager.wibuku.app	/api/swagger-ui	401
-airmanager.wibuku.app	/api/v1/openapi.json	401
-airmanager.wibuku.app	/api/v1/swagger.json	401
-airmanager.wibuku.app	/api/v2/openapi.json	401
-airmanager.wibuku.app	/api/v2/swagger.json	401

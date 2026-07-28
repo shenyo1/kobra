@@ -1,8 +1,0 @@
-  admin@wibuku.app -> {"status":"failed","error":"Email tidak ditemukan"}
-  root@wibuku.app -> {"status":"failed","error":"Email tidak ditemukan"}
-  support@wibuku.app -> {"status":"failed","error":"Email tidak ditemukan"}
-  hello@wibuku.app -> {"status":"failed","error":"Email tidak ditemukan"}
-  cs@wibuku.app -> {"status":"failed","error":"Email tidak ditemukan"}
-  help@wibuku.app -> {"status":"failed","error":"Email tidak ditemukan"}
-  info@wibuku.app -> {"status":"failed","error":"Email tidak ditemukan"}
-  contact@wibuku.app -> {"status":"failed","error":"Email tidak ditemukan"}

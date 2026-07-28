@@ -1,3 +1,0 @@
-20250303000716 200 text/plain https://s1.wibuku.app/
-20250303000726 200 text/plain https://s1.wibuku.app/
-20250303000726 301 text/html http://s1.wibuku.app/

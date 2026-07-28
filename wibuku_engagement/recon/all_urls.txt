@@ -1,8 +1,0 @@
-href="https://play-lh.googleusercontent.com/EAVnwk0BS5chgGbygHiIYu2w5OLx54GdXDZQBsdLM4rU_xZ86fPjBmLAljN9wARvmvxA=s32-rw"
-href="https://play.google.com/store/apps/details?id=wibuku.app.wibuku&hl=id"
-href="https://premium.wibuku.app"
-href="https://wibuku.app/privacy.html"
-href="https://wibuku.com/"
-src="/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js"
-src="https://play-lh.googleusercontent.com/EAVnwk0BS5chgGbygHiIYu2w5OLx54GdXDZQBsdLM4rU_xZ86fPjBmLAljN9wARvmvxA=s128-rw"
-src="https://unpkg.com/lucide@latest"

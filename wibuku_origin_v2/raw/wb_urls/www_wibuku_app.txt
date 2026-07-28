@@ -1,3 +1,0 @@
-20230811185929 301 unk http://www.wibuku.app/
-20250225000809 200 text/html https://www.wibuku.app/
-20250225000809 301 text/html http://www.wibuku.app/

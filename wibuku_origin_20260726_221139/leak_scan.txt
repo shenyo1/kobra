@@ -1,8 +1,0 @@
---- panel.wibuku.app ---
-server: cloudflare
---- premium.wibuku.app ---
-server: cloudflare
---- airmanager.wibuku.app ---
-server: cloudflare
---- wibuku.app ---
-server: cloudflare
