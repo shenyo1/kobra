@@ -48,6 +48,7 @@ pub mod api_discovery; // API endpoint enumeration + OpenAPI/Swagger discovery
 pub mod cors_deep;     // CORS deep scanner (wildcard, reflection, preflight)
 pub mod headless;      // Headless browser — DOM XSS, SPA crawl, JS execution
 pub mod crawler;       // Basic crawler — JS endpoints, sitemap, robots, links
+pub mod waf_learn;     // WAF Learning Mode — detect + bypass suggestions
 
 /// Run all enabled modules against a single URL with a set of parameters.
 /// `oob_host` enables blind-SSRF callback testing (your listener/collaborator).
@@ -95,6 +96,7 @@ pub async fn run_all(
     findings.extend(deser::scan(http, target, mode).await?);
     findings.extend(multitenant::scan(http, target, mode).await?);
     findings.extend(waf::scan(http, target, mode).await?);
+    findings.extend(waf_learn::scan(http, target, mode).await);
     findings.extend(research2026::scan(http, target, mode).await?);
     findings.extend(aioob::scan(http, target, mode).await?);
     findings.extend(smuggle::scan(http, target, mode).await?);

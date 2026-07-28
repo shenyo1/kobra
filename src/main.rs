@@ -10,7 +10,7 @@ use kobra::types::{Mode, Severity};
 use std::sync::Arc;
 
 #[derive(Parser)]
-#[command(name = "kobra", version, about = "KOBRA v1.5 — auth session + basic crawler + template system + headless")]
+#[command(name = "kobra", version, about = "KOBRA v1.6 — WAF learning + webhooks + auth + crawler + headless")]
 struct Cli {
     /// Target URL(s). Comma-separated for multiple.
     #[arg(short, long, value_delimiter = ',')]
@@ -84,6 +84,18 @@ struct Cli {
     /// Example: --auth "https://api.example.com/login|username=admin&password=admin"
     #[arg(long)]
     auth: Option<String>,
+
+    /// Slack webhook URL for notifications.
+    #[arg(long)]
+    slack_webhook: Option<String>,
+
+    /// Discord webhook URL for notifications.
+    #[arg(long)]
+    discord_webhook: Option<String>,
+
+    /// Generic webhook URL for JSON notifications.
+    #[arg(long)]
+    webhook: Option<String>,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
@@ -367,6 +379,27 @@ async fn main() -> anyhow::Result<()> {
 
     // Always show everything (full disclosure).
     let all = dedupe_noise(all);
+
+    // Webhook notifications
+    if let Some(url) = &cli.slack_webhook {
+        match kobra::report::webhook::send_slack(url, &all, &cli.engagement).await {
+            Ok(_) => println!("[+] Slack notification sent"),
+            Err(e) => eprintln!("[-] Slack webhook error: {}", e),
+        }
+    }
+    if let Some(url) = &cli.discord_webhook {
+        match kobra::report::webhook::send_discord(url, &all, &cli.engagement).await {
+            Ok(_) => println!("[+] Discord notification sent"),
+            Err(e) => eprintln!("[-] Discord webhook error: {}", e),
+        }
+    }
+    if let Some(url) = &cli.webhook {
+        match kobra::report::webhook::send_generic(url, &all, &cli.engagement).await {
+            Ok(_) => println!("[+] Generic webhook sent"),
+            Err(e) => eprintln!("[-] Webhook error: {}", e),
+        }
+    }
+
     legacy::print_findings(&all, cli.json);
     if let Some(out) = &cli.output {
         legacy::write_report(&all, out);
