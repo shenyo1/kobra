@@ -4,7 +4,6 @@
 
 use crate::http::HttpClient;
 use crate::types::{Finding, Mode, Severity};
-use anyhow::Result;
 use regex::Regex;
 
 /// Sinks that can execute HTML/script and lead to DOM XSS if fed tainted input.

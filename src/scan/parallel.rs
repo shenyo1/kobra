@@ -1,8 +1,7 @@
 //! Multi-target parallel scanning with shared rate-limit budget.
 //! Pools targets, dispatches to N concurrent workers.
 
-use crate::http::HttpClient;
-use crate::types::{Finding, Mode};
+use crate::types::Finding;
 use crate::engine::rate_limit::{new_limiter, wait_ms};
 use std::sync::Arc;
 use std::time::Duration;

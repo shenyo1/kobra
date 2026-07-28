@@ -2,7 +2,7 @@ use crate::http::HttpClient;
 use crate::types::{Finding, Mode, Severity};
 use crate::engine::timing;
 use anyhow::Result;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 /// SQLi scanner — error-based + boolean-blind + time-based blind detection.
 pub async fn scan(http: &HttpClient, target: &str, params: &[String], mode: Mode) -> Result<Vec<Finding>> {

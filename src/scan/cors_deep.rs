@@ -9,7 +9,7 @@ pub async fn scan(http: &HttpClient, target: &str, _mode: Mode) -> Result<Vec<Fi
     let base = target.trim_end_matches('/');
 
     // 1. Wildcard origin test
-    if let Ok((st, h, _b, _f)) = http.get_with_origin(&format!("{}/", base), "https://evil.com").await {
+    if let Ok((_st, h, _b, _f)) = http.get_with_origin(&format!("{}/", base), "https://evil.com").await {
         let acao = h.lines().find(|l| l.to_lowercase().starts_with("access-control-allow-origin:"));
         let acac = h.lines().find(|l| l.to_lowercase().starts_with("access-control-allow-credentials:"));
         let allow_creds = acac.map(|l| l.contains("true")).unwrap_or(false);

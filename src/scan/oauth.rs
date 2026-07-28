@@ -3,7 +3,6 @@
 
 use crate::http::HttpClient;
 use crate::types::{Finding, Mode, Severity};
-use anyhow::Result;
 
 const OAUTH_PATHS: &[&str] = &[
     "/oauth/authorize", "/oauth/authenticate", "/oauth/token",

@@ -1,11 +1,10 @@
 //! Plugin system — hot-load custom scan modules from JSON descriptors.
 //! Plugin format: {name, version, author, target_match (regex), checks: [{id, description, payload, match_pattern, severity}]}
 
-use crate::types::{Finding, Mode, Severity};
+use crate::types::{Finding, Severity};
 use regex::Regex;
 use serde::Deserialize;
 use std::fs;
-use std::path::Path;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Plugin {

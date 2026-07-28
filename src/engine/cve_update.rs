@@ -2,9 +2,9 @@
 //! Saves to local JSON cache. Runs on-demand or via --cve-update flag.
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::fs;
 
+#[allow(dead_code)]
 const CVE_FEED_URL: &str = "https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-2026.json.zip";
 const CISA_KEV_URL: &str = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json";
 

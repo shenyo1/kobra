@@ -3,7 +3,6 @@
 
 use crate::types::{Finding, Severity};
 use std::fs;
-use std::path::Path;
 
 pub fn curl_for(finding: &Finding) -> String {
     let method = match finding.category.as_str() {

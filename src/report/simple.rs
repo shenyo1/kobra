@@ -52,7 +52,7 @@ pub fn print_simple(findings: &[Finding]) {
     println!(" 📋 DAFTAR CELAH:");
     println!("{}", "-".repeat(55));
 
-    for (i, f) in sorted.iter().enumerate() {
+    for (_i, f) in sorted.iter().enumerate() {
         let icon = match f.severity {
             Severity::Critical => "🔴",
             Severity::High => "🟠",

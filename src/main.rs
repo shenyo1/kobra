@@ -223,7 +223,7 @@ async fn main() -> anyhow::Result<()> {
   ██  ██      ██   █ █▄▄█ █▀▀▌
   ██  ██      ▀████▀ █  █ █  █
   ▀█   ▀        ▀        █  █
-        KOBRA v1.0 — all-in-one BB scanner (OVERPOWERED)\x1b[0m"
+        KOBRA v1.7 — all-in-one BB scanner (OVERPOWERED)\x1b[0m"
     );
     println!("[*] mode={:?} concurrency={} timeout={}s", mode, conc, cli.timeout);
 
@@ -235,7 +235,7 @@ async fn main() -> anyhow::Result<()> {
 
     // Checkpoint: resume support
     let ckpt_path = format!("/tmp/kobra_{}.ckpt.json", cli.engagement);
-    let mut ckpt = checkpoint::Checkpoint::load(&ckpt_path);
+    let ckpt = checkpoint::Checkpoint::load(&ckpt_path);
 
     // Rate limiter
     let rl = rate_limit::new_limiter();

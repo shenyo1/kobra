@@ -3,12 +3,13 @@
 
 use crate::http::HttpClient;
 use crate::types::{Finding, Mode, Severity};
-use anyhow::Result;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use serde_json::Value;
 use std::collections::HashMap;
 
+#[allow(dead_code)]
 const NONE_HEADER: &str = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0";
+#[allow(dead_code)]
 const NONE_HEADER_RS: &str = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ImFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ.";
 
 fn b64u_decode(s: &str) -> Vec<u8> {
