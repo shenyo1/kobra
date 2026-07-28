@@ -10,7 +10,7 @@ use kobra::types::{Mode, Severity};
 use std::sync::Arc;
 
 #[derive(Parser)]
-#[command(name = "kobra", version, about = "KOBRA v1.6 — WAF learning + webhooks + auth + crawler + headless")]
+#[command(name = "kobra", version, about = "KOBRA v1.7 — beginner-friendly safe mode + simple ID output")]
 struct Cli {
     /// Target URL(s). Comma-separated for multiple.
     #[arg(short, long, value_delimiter = ',')]
@@ -96,6 +96,14 @@ struct Cli {
     /// Generic webhook URL for JSON notifications.
     #[arg(long)]
     webhook: Option<String>,
+
+    /// Simple mode: Bahasa Indonesia output, easy-to-read format.
+    #[arg(long)]
+    simple: bool,
+
+    /// Skip safety confirmation (for automation/CI).
+    #[arg(long)]
+    no_confirm: bool,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
@@ -123,6 +131,28 @@ async fn main() -> anyhow::Result<()> {
         std::process::exit(1);
     }
     let mode: Mode = cli.mode.into();
+
+    // --safe confirmation
+    if !cli.no_confirm {
+        println!("\n\x1b[93m⚠️  PERINGATAN KEAMANAN\x1b[0m");
+        println!("{}", "\u{2500}".repeat(50));
+        println!("Target: \x1b[96m{}\x1b[0m", cli.target.join(", "));
+        println!("Mode: \x1b[96m{:?}\x1b[0m", mode);
+        println!();
+        println!("Pastikan kamu punya IZIN untuk menguji target ini.");
+        println!("Scanning tanpa izin = MELANGGAR HUKUM (UU ITE).");
+        println!();
+        println!("Ketik \x1b[92mY\x1b[0m atau \x1b[92myes\x1b[0m untuk lanjut, atau \x1b[91mN\x1b[0m untuk batal:");
+        let mut input = String::new();
+        std::io::stdin().read_line(&mut input).ok();
+        let input = input.trim().to_lowercase();
+        if input != "y" && input != "yes" {
+            println!("\n\x1b[91m[-] Dibatalkan oleh pengguna.\x1b[0m");
+            std::process::exit(0);
+        }
+        println!();
+    }
+
     let conc = cli.concurrency.unwrap_or_else(|| mode.concurrency());
     let mut http = HttpClient::new(conc, cli.timeout)?;
 
@@ -379,6 +409,11 @@ async fn main() -> anyhow::Result<()> {
 
     // Always show everything (full disclosure).
     let all = dedupe_noise(all);
+
+    // Simple mode output (Bahasa Indonesia)
+    if cli.simple {
+        kobra::report::simple::print_simple(&all);
+    }
 
     // Webhook notifications
     if let Some(url) = &cli.slack_webhook {

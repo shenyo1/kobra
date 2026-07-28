@@ -6,3 +6,4 @@ pub mod dashboard;
 pub mod legacy;
 pub mod resilience;
 pub mod webhook;        // Slack/Discord/generic webhook reporter
+pub mod simple;         // Simple Bahasa Indonesia output for beginners
