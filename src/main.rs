@@ -10,7 +10,7 @@ use kobra::types::{Mode, Severity};
 use std::sync::Arc;
 
 #[derive(Parser)]
-#[command(name = "kobra", version, about = "KOBRA v1.8 — nuclei compat + multi-session IDOR + tech fingerprint")]
+#[command(name = "kobra", version, about = "KOBRA v1.9 — SARIF + screenshots + passive proxy + wordlist fuzzing")]
 struct Cli {
     /// Target URL(s). Comma-separated for multiple.
     #[arg(short, long, value_delimiter = ',')]
@@ -112,6 +112,22 @@ struct Cli {
     /// Second auth session for IDOR testing. Format: "url|body"
     #[arg(long)]
     auth2: Option<String>,
+
+    /// Export SARIF report (GitHub Security tab compatible).
+    #[arg(long)]
+    sarif: Option<String>,
+
+    /// Screenshot directory for visual evidence (requires Chrome).
+    #[arg(long)]
+    screenshot_dir: Option<String>,
+
+    /// Custom wordlist file for path/param fuzzing (one entry per line).
+    #[arg(long)]
+    wordlist: Option<String>,
+
+    /// Passive proxy port — log traffic and detect vulns passively.
+    #[arg(long)]
+    proxy: Option<u16>,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
@@ -512,6 +528,18 @@ async fn main() -> anyhow::Result<()> {
         match markdown_v2::write(&all, &cli.engagement, p) {
             Ok(_) => println!("[+] Markdown v2 report written to {}", p),
             Err(e) => eprintln!("[-] MD error: {}", e),
+        }
+    }
+    if let Some(p) = &cli.sarif {
+        match kobra::report::sarif::write(&all, &cli.engagement, p) {
+            Ok(_) => println!("[+] SARIF report written to {}", p),
+            Err(e) => eprintln!("[-] SARIF error: {}", e),
+        }
+    }
+    if let Some(dir) = &cli.screenshot_dir {
+        let n = kobra::report::screenshot::capture_screenshots(&all, dir).await;
+        if n > 0 {
+            println!("[+] {} screenshots saved to {}", n, dir);
         }
     }
 

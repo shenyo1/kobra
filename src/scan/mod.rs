@@ -51,6 +51,8 @@ pub mod crawler;       // Basic crawler — JS endpoints, sitemap, robots, links
 pub mod waf_learn;     // WAF Learning Mode — detect + bypass suggestions
 pub mod tech_fingerprint; // Tech fingerprinting — detect frameworks/CMS/servers
 pub mod idor;          // Multi-session IDOR testing — compare two auth sessions
+pub mod fuzz;          // Wordlist fuzzing — ffuf-style path + param fuzzing
+pub mod passive;       // Passive proxy mode — analyze traffic without active probes
 
 /// Run all enabled modules against a single URL with a set of parameters.
 /// `oob_host` enables blind-SSRF callback testing (your listener/collaborator).
@@ -100,6 +102,8 @@ pub async fn run_all(
     findings.extend(waf::scan(http, target, mode).await?);
     findings.extend(waf_learn::scan(http, target, mode).await);
     findings.extend(tech_fingerprint::scan(http, target, mode).await);
+    findings.extend(fuzz::fuzz_paths(http, target, None, mode).await);
+    findings.extend(fuzz::fuzz_params(http, target, None, mode).await);
     findings.extend(research2026::scan(http, target, mode).await?);
     findings.extend(aioob::scan(http, target, mode).await?);
     findings.extend(smuggle::scan(http, target, mode).await?);
