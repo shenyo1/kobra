@@ -12,7 +12,7 @@
 # 1. Copy binary KOBRA
 scp user@server-utama:~/.local/bin/kobra ~/.local/bin/
 # atau download dari release: 
-# curl -L https://github.com/shenyo1/kobra/releases/download/v1.7.0/kobra -o ~/.local/bin/kobra
+# curl -L https://github.com/shenyo1/kobra/releases/download/v2.0.0/kobra -o ~/.local/bin/kobra
 chmod +x ~/.local/bin/kobra
 
 # 2. Copy MCP server
@@ -25,7 +25,7 @@ pip install mcp
 
 # 4. Daftarkan ke Hermes
 hermes mcp add kobra --command python3 --args ~/.local/opt/kobra/kobra_mcp.py
-# → Ketik Y untuk enable semua 6 tools
+# → Ketik Y untuk enable semua 8 tools
 
 # 5. Tes
 hermes mcp test kobra
@@ -128,7 +128,7 @@ Setelah setup, **mulai session baru** lalu:
 Kalau mau **persis sama** kayak setup Sakura-chan:
 
 ```
-~/.local/bin/kobra                    → Binary KOBRA v1.7.0
+~/.local/bin/kobra                    → Binary KOBRA v2.0.0
 ~/.local/opt/kobra/kobra_mcp.py       → MCP server
 ~/.local/opt/kobra/kobra_orchestrator.py  → Orchestrator (opsional)
 ~/.local/opt/kobra/*.py               → Helper scripts
