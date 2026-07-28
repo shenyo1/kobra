@@ -7,3 +7,4 @@ pub mod rate_limit;
 pub mod fp_filter;
 pub mod chain_detect;
 pub mod cve_update;
+pub mod template;

@@ -50,6 +50,7 @@ pub mod cors_deep;     // CORS deep scanner (wildcard, reflection, preflight)
 /// Run all enabled modules against a single URL with a set of parameters.
 /// `oob_host` enables blind-SSRF callback testing (your listener/collaborator).
 /// `plugins` are hot-loaded JSON plugin modules.
+/// `templates` are YAML/JSON template-based checks.
 pub async fn run_all(
     http: &HttpClient,
     target: &str,
@@ -57,6 +58,7 @@ pub async fn run_all(
     mode: Mode,
     oob_host: &str,
     plugins: &[crate::scan::plugin::Plugin],
+    templates: &[crate::engine::template::Template],
 ) -> Result<Vec<Finding>> {
     let mut findings = Vec::new();
     let mut ps: Vec<String> = if params.is_empty() {
@@ -113,5 +115,7 @@ pub async fn run_all(
     findings.extend(cors_deep::scan(http, target, mode).await?);
     // Plugin modules
     findings.extend(plugin::scan_with_plugins(http, target, plugins).await);
+    // Template-based checks
+    findings.extend(crate::engine::template::run_templates(http, target, templates, mode).await);
     Ok(findings)
 }

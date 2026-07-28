@@ -1,7 +1,7 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 /// Severity — ALL levels shown, nothing hidden.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum Severity {
     Info,
     Low,
@@ -32,7 +32,7 @@ impl Severity {
 }
 
 /// A single finding. We NEVER hide anything — full transparency for the operator.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Finding {
     pub severity: Severity,
     pub category: String,      // XSS, SQLi, SSRF, AUTH, WAF, INFO...

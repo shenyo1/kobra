@@ -4,3 +4,4 @@ pub mod poc;
 pub mod markdown_v2;
 pub mod dashboard;
 pub mod legacy;
+pub mod resilience;

@@ -10,7 +10,7 @@ use kobra::types::{Mode, Severity};
 use std::sync::Arc;
 
 #[derive(Parser)]
-#[command(name = "kobra", version, about = "KOBRA v1.2 — parallel scan + time-based SQLi + CVE feed + plugins")]
+#[command(name = "kobra", version, about = "KOBRA v1.3 — YAML/JSON template system + output resilience")]
 struct Cli {
     /// Target URL(s). Comma-separated for multiple.
     #[arg(short, long, value_delimiter = ',')]
@@ -63,6 +63,10 @@ struct Cli {
     /// Update CVE database from NVD/CISA feed.
     #[arg(long)]
     cve_update: bool,
+
+    /// Template directory for YAML/JSON vulnerability checks.
+    #[arg(long)]
+    template_dir: Option<String>,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
@@ -104,7 +108,10 @@ async fn main() -> anyhow::Result<()> {
     );
     println!("[*] mode={:?} concurrency={} timeout={}s", mode, conc, cli.timeout);
 
-    let mut all: Vec<kobra::types::Finding> = Vec::new();
+    // Output resilience: incremental JSON Lines
+    let jsonl_path = format!("/tmp/kobra_{}.jsonl", cli.engagement);
+    // Load previous findings if any (from partial runs)
+    let mut all: Vec<kobra::types::Finding> = kobra::report::resilience::read_findings(&jsonl_path);
     let mut scan_targets: Vec<String> = cli.target.iter().map(|s| s.trim().to_string()).collect();
 
     // Checkpoint: resume support
@@ -123,6 +130,17 @@ async fn main() -> anyhow::Result<()> {
     };
     if !plugins.is_empty() {
         println!("[+] loaded {} plugin(s)", plugins.len());
+    }
+
+    // Load templates if --template-dir provided
+    let templates: Vec<kobra::engine::template::Template> = if let Some(dir) = &cli.template_dir {
+        println!("[*] loading templates from {}...", dir);
+        kobra::engine::template::load_templates(dir)
+    } else {
+        vec![]
+    };
+    if !templates.is_empty() {
+        println!("[+] loaded {} template(s)", templates.len());
     }
 
     // CVE update if --cve-update
@@ -186,6 +204,8 @@ async fn main() -> anyhow::Result<()> {
         let scan_mode = mode;
         let scan_rl = rl.clone();
         let scan_plugins = plugins.clone();
+        let scan_templates = templates.clone();
+        let jsonl = jsonl_path.clone();
         let results = kobra::scan::parallel::scan_targets(
             active_targets,
             parallel_config,
@@ -194,6 +214,8 @@ async fn main() -> anyhow::Result<()> {
                 let mode = scan_mode;
                 let rl = scan_rl.clone();
                 let pl = scan_plugins.clone();
+                let tl = scan_templates.clone();
+                let jl = jsonl.clone();
                 async move {
                     rate_limit::record_request(&rl, &target);
                     let extra: Vec<String> = if mode == Mode::Crazy {
@@ -202,10 +224,12 @@ async fn main() -> anyhow::Result<()> {
                     } else {
                         vec![]
                     };
-                    match scan::run_all(&http, &target, &extra, mode, "", &pl).await {
+                    match scan::run_all(&http, &target, &extra, mode, "", &pl, &tl).await {
                         Ok(f) => {
                             println!("[+] {} → {} finding(s)", target, f.len());
                             rate_limit::record_response(&rl, &target, 200);
+                            // Incremental write
+                            let _ = kobra::report::resilience::append_findings(&jl, &f);
                             f
                         }
                         Err(e) => {
