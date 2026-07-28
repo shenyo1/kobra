@@ -127,7 +127,7 @@ mod tests {
 
     #[test]
     fn path_creation_logic() {
-        let p = Path::new("/tmp/kobra_screenshots_test");
+        let p = std::path::Path::new("/tmp/kobra_screenshots_test");
         assert!(!p.to_str().unwrap().is_empty());
     }
 }

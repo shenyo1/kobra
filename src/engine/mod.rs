@@ -9,3 +9,6 @@ pub mod chain_detect;
 pub mod cve_update;
 pub mod template;
 pub mod nuclei_compat;
+pub mod diff;
+pub mod cross_chain;
+pub mod watch;

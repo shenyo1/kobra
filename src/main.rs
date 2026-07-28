@@ -10,7 +10,7 @@ use kobra::types::{Mode, Severity};
 use std::sync::Arc;
 
 #[derive(Parser)]
-#[command(name = "kobra", version, about = "KOBRA v1.9 — SARIF + screenshots + passive proxy + wordlist fuzzing")]
+#[command(name = "kobra", version, about = "KOBRA v2.0 — diff scan + cross-target chain + watch mode")]
 struct Cli {
     /// Target URL(s). Comma-separated for multiple.
     #[arg(short, long, value_delimiter = ',')]
@@ -128,6 +128,26 @@ struct Cli {
     /// Passive proxy port — log traffic and detect vulns passively.
     #[arg(long)]
     proxy: Option<u16>,
+
+    /// Diff against a previous scan baseline (JSON file).
+    #[arg(long)]
+    diff_baseline: Option<String>,
+
+    /// Watch mode: rescan periodically and alert on new findings.
+    #[arg(long)]
+    watch: bool,
+
+    /// Watch interval in minutes (default: 30).
+    #[arg(long, default_value_t = 30)]
+    watch_interval: u64,
+
+    /// Watch mode: max iterations (0 = infinite).
+    #[arg(long, default_value_t = 0)]
+    watch_max: u32,
+
+    /// Watch mode: only alert on High+ findings.
+    #[arg(long)]
+    watch_high_only: bool,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
@@ -480,7 +500,49 @@ async fn main() -> anyhow::Result<()> {
     }
 
     // Always show everything (full disclosure).
-    let all = dedupe_noise(all);
+    let mut all = dedupe_noise(all);
+
+    // Cross-target chain detection
+    let cross_chains = kobra::engine::cross_chain::detect_cross_chains(&all);
+    if !cross_chains.is_empty() {
+        println!("\n[*] === CROSS-TARGET ATTACK CHAINS ===");
+        for c in &cross_chains {
+            println!("[!] {} [{:?}] confidence={}", c.name, c.severity, c.confidence);
+            println!("    Targets: {}", c.targets.join(" + "));
+            for s in &c.steps {
+                println!("     → {}", s);
+            }
+        }
+        // Add cross-chains as findings
+        for c in cross_chains {
+            all.push(
+                kobra::types::Finding::new(
+                    c.severity,
+                    "CROSS-CHAIN",
+                    &c.name,
+                    &c.targets.join(" + ")
+                )
+                .with_evidence(&format!("{} steps across {} targets", c.steps.len(), c.targets.len()))
+                .with_confidence(c.confidence)
+                .with_note(&c.description)
+            );
+        }
+    }
+
+    // Diff-based scan comparison
+    if let Some(baseline_path) = &cli.diff_baseline {
+        println!("\n[*] Loading baseline from {}...", baseline_path);
+        let baseline = kobra::engine::diff::load_baseline(baseline_path);
+        if baseline.is_empty() {
+            println!("[-] Baseline empty or not found. Skipping diff.");
+        } else {
+            let diff_result = kobra::engine::diff::diff_findings(&all, &baseline);
+            kobra::engine::diff::print_diff(&diff_result);
+            // Add diff markers to findings
+            let diff_findings = kobra::engine::diff::diff_to_findings(&diff_result);
+            all.extend(diff_findings);
+        }
+    }
 
     // Simple mode output (Bahasa Indonesia)
     if cli.simple {
