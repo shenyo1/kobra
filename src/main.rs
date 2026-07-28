@@ -267,7 +267,7 @@ async fn main() -> anyhow::Result<()> {
   ██  ██      ██   █ █▄▄█ █▀▀▌
   ██  ██      ▀████▀ █  █ █  █
   ▀█   ▀        ▀        █  █
-        KOBRA v1.7 — all-in-one BB scanner (OVERPOWERED)\x1b[0m"
+        KOBRA v2.0 — all-in-one BB scanner (OVERPOWERED)\x1b[0m"
     );
     println!("[*] mode={:?} concurrency={} timeout={}s", mode, conc, cli.timeout);
 
