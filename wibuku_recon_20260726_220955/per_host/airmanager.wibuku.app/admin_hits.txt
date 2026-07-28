@@ -1,0 +1,5 @@
+airmanager.wibuku.app	/api/account	401
+airmanager.wibuku.app	/api/admin	401
+airmanager.wibuku.app	/api/me	401
+airmanager.wibuku.app	/api/user	401
+airmanager.wibuku.app	/api/users	401

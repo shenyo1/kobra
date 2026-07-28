@@ -1,0 +1,19 @@
+=== GET https://panel.wibuku.app/robots.txt ===
+HTTP/2 200 
+date: Sun, 26 Jul 2026 22:21:32 GMT
+content-type: application/json
+content-length: 54
+access-control-allow-origin: 
+vary: Origin
+accept-ranges: bytes
+age: 202
+last-modified: Sun, 26 Jul 2026 22:18:10 GMT
+cache-control: max-age=14400
+cf-cache-status: HIT
+strict-transport-security: max-age=0; includeSubDomains; preload
+x-content-type-options: nosniff
+server: cloudflare
+cf-ray: a216cc463ccc03c6-ICN
+alt-svc: h3=":443"; ma=86400
+
+--- size 54 ---

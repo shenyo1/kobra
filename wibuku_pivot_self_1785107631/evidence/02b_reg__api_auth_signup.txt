@@ -1,0 +1,14 @@
+HTTP/2 404 
+date: Sun, 26 Jul 2026 23:15:25 GMT
+content-type: text/plain; charset=utf-8
+content-length: 28
+access-control-allow-origin: https://premium.wibuku.app
+vary: Origin
+cf-cache-status: DYNAMIC
+strict-transport-security: max-age=0; includeSubDomains; preload
+x-content-type-options: nosniff
+server: cloudflare
+cf-ray: a2171b36e93203c6-ICN
+alt-svc: h3=":443"; ma=86400
+
+Cannot POST /api/auth/signup

@@ -1,0 +1,40 @@
+=== panel.wibuku.app OPTIONS wildcard? ===
+HTTP/2 204 
+date: Sun, 26 Jul 2026 22:23:30 GMT
+access-control-allow-headers: Origin,Content-Type,Accept
+access-control-allow-methods: GET,POST,HEAD,PUT,DELETE,PATCH
+access-control-allow-origin: 
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+cf-cache-status: DYNAMIC
+strict-transport-security: max-age=0; includeSubDomains; preload
+x-content-type-options: nosniff
+server: cloudflare
+cf-ray: a216cf2778b303c6-ICN
+alt-svc: h3=":443"; ma=86400
+
+=== premium.wibuku.app OPTIONS wildcard? ===
+HTTP/2 204 
+date: Sun, 26 Jul 2026 22:23:30 GMT
+access-control-allow-headers: Origin,Content-Type,Accept
+access-control-allow-methods: GET,POST,HEAD,PUT,DELETE,PATCH
+vary: Access-Control-Request-Method, Access-Control-Request-Headers, Origin
+cf-cache-status: DYNAMIC
+strict-transport-security: max-age=0; includeSubDomains; preload
+x-content-type-options: nosniff
+server: cloudflare
+cf-ray: a216cf295ad103c6-ICN
+alt-svc: h3=":443"; ma=86400
+
+=== airmanager.wibuku.app OPTIONS wildcard? ===
+HTTP/2 204 
+date: Sun, 26 Jul 2026 22:23:30 GMT
+access-control-allow-methods: GET,POST,HEAD,PUT,DELETE,PATCH
+access-control-allow-origin: *
+vary: Access-Control-Request-Method, Access-Control-Request-Headers, Origin
+cf-cache-status: DYNAMIC
+strict-transport-security: max-age=0; includeSubDomains; preload
+x-content-type-options: nosniff
+server: cloudflare
+cf-ray: a216cf2a1b8d03c6-ICN
+alt-svc: h3=":443"; ma=86400
+

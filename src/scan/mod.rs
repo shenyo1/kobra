@@ -1,0 +1,117 @@
+//! Vulnerability scan modules. Each returns ALL findings (no hiding).
+//! Aggressive ("crazy") mode multiplies payload counts + triggers bypass attempts.
+
+use crate::http::HttpClient;
+use crate::types::{Finding, Mode};
+use anyhow::Result;
+
+pub mod xss;
+pub mod sqli;
+pub mod ssrf;
+pub mod auth;
+pub mod waf;
+pub mod traversal;
+pub mod rce;
+pub mod graphql;
+pub mod proto;
+pub mod nosql;
+pub mod xxe;
+pub mod cors;
+pub mod ssti;
+pub mod deser;
+pub mod ws;
+pub mod authflow;   // magic-link / OTP pre-auth ATO
+pub mod multitenant; // tenant isolation / cross-tenant leak
+pub mod ssrf_oob;   // blind SSRF OOB callback proof
+pub mod research2026; // 2026 research enrichment (cf-error, magic-link hijack, graphql batch)
+pub mod aioob;      // AI prompt injection / system-prompt disclosure (P1: ai.sumopod.com)
+pub mod smuggle;    // HTTP request smuggling / CL-TE desync (Kong CVE-2026-6338)
+pub mod origin_disc; // Cloudflare origin IP discovery (crt.sh historical certs)
+pub mod payment;    // Payment logic / IDOR (price tamper, payment_method_id swap)
+pub mod email_ato;  // Email-only-login Mass ATO detector (wibuku.app pattern)
+pub mod ip_ban_bypass; // IP ban bypass via header spoofing (sankavollerei.web.id pattern)
+pub mod js_secret_mine; // Hardcoded secrets in JS bundles (API keys, JWT, AWS, Stripe)
+pub mod jwt;           // JWT exploit (alg:none, weak secret, RS256 confusion)
+pub mod oauth;         // OAuth 2.0 / OIDC flow tester (redirect_uri, PKCE, scope)
+pub mod dom_xss;       // DOM XSS sink/source detection (static JS analysis)
+pub mod race;          // Race condition / TOCTOU engine
+pub mod takeover;      // Subdomain takeover (CNAME dangling)
+pub mod exposed_files; // Sensitive file exposure (.env, .git, backups)
+pub mod source_map;    // Source map leak detection
+pub mod smuggle_v2;    // HTTP request smuggling v2 (CL.TE/TE.CL timing)
+pub mod cve_2026;      // CVE-specific detection (Log4Shell, Spring4Shell, Fortinet, etc.)
+pub mod header_trust;  // IP-spoof header trust detector (CF-Connecting-IP, X-Forwarded-For, etc.)
+pub mod parallel;      // Multi-target parallel scanning
+pub mod checkpoint;    // Resume from checkpoint after crash
+pub mod plugin;        // Hot-load custom scan modules from JSON
+pub mod api_discovery; // API endpoint enumeration + OpenAPI/Swagger discovery
+pub mod cors_deep;     // CORS deep scanner (wildcard, reflection, preflight)
+
+/// Run all enabled modules against a single URL with a set of parameters.
+/// `oob_host` enables blind-SSRF callback testing (your listener/collaborator).
+/// `plugins` are hot-loaded JSON plugin modules.
+pub async fn run_all(
+    http: &HttpClient,
+    target: &str,
+    params: &[String],
+    mode: Mode,
+    oob_host: &str,
+    plugins: &[crate::scan::plugin::Plugin],
+) -> Result<Vec<Finding>> {
+    let mut findings = Vec::new();
+    let mut ps: Vec<String> = if params.is_empty() {
+        vec!["q".to_string(), "id".to_string(), "search".to_string(), "url".to_string(),
+             "file".to_string(), "input".to_string(), "redirect".to_string(), "next".to_string()]
+    } else {
+        params.to_vec()
+    };
+    // Always include baseline params so reflection checks run even when caller
+    // passes extra (crazy) params.
+    for base in ["q","id","search","url","redirect","next"] {
+        if !ps.iter().any(|x| x == base) {
+            ps.push(base.to_string());
+        }
+    }
+
+    findings.extend(xss::scan(http, target, &ps, mode).await?);
+    findings.extend(sqli::scan(http, target, &ps, mode).await?);
+    findings.extend(ssrf::scan(http, target, &ps, mode).await?);
+    findings.extend(ssrf_oob::scan(http, target, &ps, mode, oob_host).await?);
+    findings.extend(traversal::scan(http, target, &ps, mode).await?);
+    findings.extend(rce::scan(http, target, &ps, mode).await?);
+    findings.extend(nosql::scan(http, target, &ps, mode).await?);
+    findings.extend(ssti::scan(http, target, &ps, mode).await?);
+    findings.extend(xxe::scan(http, target, mode).await?);
+    findings.extend(auth::scan(http, target, mode).await?);
+    findings.extend(authflow::scan(http, target, mode).await?);
+    findings.extend(graphql::scan(http, target, mode).await?);
+    findings.extend(proto::scan(http, target, mode).await?);
+    findings.extend(cors::scan(http, target, mode).await?);
+    findings.extend(ws::scan(http, target, mode).await?);
+    findings.extend(deser::scan(http, target, mode).await?);
+    findings.extend(multitenant::scan(http, target, mode).await?);
+    findings.extend(waf::scan(http, target, mode).await?);
+    findings.extend(research2026::scan(http, target, mode).await?);
+    findings.extend(aioob::scan(http, target, mode).await?);
+    findings.extend(smuggle::scan(http, target, mode).await?);
+    findings.extend(origin_disc::scan(http, target, mode).await?);
+    findings.extend(payment::scan(http, target, mode).await?);
+    findings.extend(email_ato::scan(http, target, mode).await?);
+    findings.extend(ip_ban_bypass::scan(http, target, mode).await);
+    findings.extend(js_secret_mine::scan(http, target, mode).await);
+    findings.extend(jwt::scan(http, target, mode).await);
+    findings.extend(oauth::scan(http, target, mode).await);
+    findings.extend(dom_xss::scan(http, target, mode).await);
+    findings.extend(race::scan(http, target, mode).await);
+    findings.extend(takeover::scan(http, target, mode).await);
+    findings.extend(exposed_files::scan(http, target, mode).await);
+    findings.extend(source_map::scan(http, target, mode).await);
+    findings.extend(smuggle_v2::scan(http, target, mode).await);
+    findings.extend(cve_2026::scan(http, target, mode).await);
+    findings.extend(header_trust::scan(http, target, mode).await);
+    findings.extend(api_discovery::scan(http, target, mode).await?);
+    findings.extend(cors_deep::scan(http, target, mode).await?);
+    // Plugin modules
+    findings.extend(plugin::scan_with_plugins(http, target, plugins).await);
+    Ok(findings)
+}

@@ -1,0 +1,2 @@
+premium.wibuku.app	/login	405
+premium.wibuku.app	/login/	405

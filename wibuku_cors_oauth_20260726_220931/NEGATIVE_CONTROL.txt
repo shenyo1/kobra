@@ -1,0 +1,13 @@
+NEGATIVE CONTROL VERIFICATION (2026-07-26 22:15 UTC)
+
+Test 1: airmanager.wibuku.app - any random origin gets ACAO: *
+  Confirmed: CORS wildcard is unconditional (not a reflection bug)
+  Status: BUG IS REAL
+
+Test 2: panel.wibuku.app - random origin gets empty ACAO (no leak)
+  Confirmed: panel is properly configured (only preflight reflect via vary)
+  Status: NOT VULNERABLE
+
+Test 3: premium.wibuku.app - no ACAO header on actual GET
+  Confirmed: premium only exposes ACAO on OPTIONS preflight
+  Status: NOT EXPLOITABLE FOR DATA EXFIL

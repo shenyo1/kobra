@@ -1,0 +1,14 @@
+HTTP/2 200 
+date: Sun, 26 Jul 2026 23:18:10 GMT
+content-type: application/json
+content-length: 54
+access-control-allow-origin: https://panel.wibuku.app
+vary: Origin
+cf-cache-status: DYNAMIC
+strict-transport-security: max-age=0; includeSubDomains; preload
+x-content-type-options: nosniff
+server: cloudflare
+cf-ray: a2171f3b7f9803c6-ICN
+alt-svc: h3=":443"; ma=86400
+
+{"status":"failed","error":"Invalid Auth credential."}

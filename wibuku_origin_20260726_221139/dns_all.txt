@@ -1,0 +1,44 @@
+wibuku.app A 104.20.43.128
+172.66.162.124
+wibuku.app AAAA 2606:4700:10::ac42:a27c
+2606:4700:10::6814:2b80
+admin.wibuku.app A 104.20.43.128
+172.66.162.124
+admin.wibuku.app AAAA 2606:4700:10::6814:2b80
+2606:4700:10::ac42:a27c
+airmanager.wibuku.app A 104.20.43.128
+172.66.162.124
+airmanager.wibuku.app AAAA 2606:4700:10::ac42:a27c
+2606:4700:10::6814:2b80
+panel.wibuku.app A 104.20.43.128
+172.66.162.124
+panel.wibuku.app AAAA 2606:4700:10::ac42:a27c
+2606:4700:10::6814:2b80
+premium.wibuku.app A 172.66.162.124
+104.20.43.128
+premium.wibuku.app AAAA 2606:4700:10::6814:2b80
+2606:4700:10::ac42:a27c
+pillar.wibuku.app A 172.66.162.124
+104.20.43.128
+pillar.wibuku.app AAAA 2606:4700:10::ac42:a27c
+2606:4700:10::6814:2b80
+pinger.wibuku.app A 104.20.43.128
+172.66.162.124
+pinger.wibuku.app AAAA 2606:4700:10::ac42:a27c
+2606:4700:10::6814:2b80
+front.wibuku.app A 104.20.43.128
+172.66.162.124
+front.wibuku.app AAAA 2606:4700:10::ac42:a27c
+2606:4700:10::6814:2b80
+image.wibuku.app A 104.20.43.128
+172.66.162.124
+image.wibuku.app AAAA 2606:4700:10::6814:2b80
+2606:4700:10::ac42:a27c
+img.wibuku.app A 172.66.162.124
+104.20.43.128
+img.wibuku.app AAAA 2606:4700:10::6814:2b80
+2606:4700:10::ac42:a27c
+dbman.wibuku.app A 104.20.43.128
+172.66.162.124
+dbman.wibuku.app AAAA 2606:4700:10::ac42:a27c
+2606:4700:10::6814:2b80

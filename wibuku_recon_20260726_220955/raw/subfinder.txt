@@ -1,0 +1,10 @@
+admin.wibuku.app
+airmanager.wibuku.app
+dbman.wibuku.app
+front.wibuku.app
+image.wibuku.app
+img.wibuku.app
+panel.wibuku.app
+pillar.wibuku.app
+pinger.wibuku.app
+premium.wibuku.app

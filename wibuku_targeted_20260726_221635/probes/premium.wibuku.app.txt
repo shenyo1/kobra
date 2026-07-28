@@ -1,0 +1,28 @@
+=================================
+= premium.wibuku.app : NORMAL GET /
+=================================
+code=200 size=17528 time=0.113640
+--- response headers ---
+HTTP/2 200 
+date: Sun, 26 Jul 2026 22:20:29 GMT
+content-type: text/html; charset=utf-8
+x-content-type-options: nosniff
+vary: Origin,Accept-Encoding
+cf-cache-status: DYNAMIC
+strict-transport-security: max-age=0; includeSubDomains; preload
+server: cloudflare
+cf-ray: a216cab7fe2603c6-ICN
+alt-svc: h3=":443"; ma=86400
+
+
+=================================
+= premium.wibuku.app : WRONG HOST (CF error diagnostic)
+=================================
+HTTP/2 403 
+server: cloudflare
+date: Sun, 26 Jul 2026 22:20:29 GMT
+content-type: text/html
+content-length: 151
+cf-ray: a216cab9b82403c6-ICN
+
+

@@ -1,0 +1,26 @@
+=================================
+= dbman.wibuku.app : NORMAL GET /
+=================================
+code=404 size=0 time=0.264965
+--- response headers ---
+HTTP/2 404 
+date: Sun, 26 Jul 2026 22:20:29 GMT
+cf-cache-status: DYNAMIC
+strict-transport-security: max-age=0; includeSubDomains; preload
+x-content-type-options: nosniff
+server: cloudflare
+cf-ray: a216cabb9a2d03c6-ICN
+alt-svc: h3=":443"; ma=86400
+
+
+=================================
+= dbman.wibuku.app : WRONG HOST (CF error diagnostic)
+=================================
+HTTP/2 403 
+server: cloudflare
+date: Sun, 26 Jul 2026 22:20:29 GMT
+content-type: text/html
+content-length: 151
+cf-ray: a216cabc4b2603c6-ICN
+
+

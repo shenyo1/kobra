@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Wibuku - Nonton Anime Gratis</title>
+    <meta
+      name="description"
+      content="Wibuku - Aplikasi nonton anime gratis dengan subtitle Indonesia. Koleksi lengkap, streaming lancar, update harian. Download sekarang di Google Play Store."
+    />
+    <meta
+      name="keywords"
+      content="wibuku, nonton anime gratis, anime sub indo, streaming anime indonesia, aplikasi anime, download anime"
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://wibuku.com/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://wibuku.com/" />
+    <meta property="og:title" content="Wibuku - Nonton Anime Gratis Sub Indo" />
+    <meta
+      property="og:description"
+      content="Aplikasi nonton anime gratis dengan subtitle Indonesia. Koleksi lengkap, streaming lancar, update harian. Download sekarang!"
+    />
+    <meta
+      property="og:image"
+      content="https://play-lh.googleusercontent.com/EAVnwk0BS5chgGbygHiIYu2w5OLx54GdXDZQBsdLM4rU_xZ86fPjBmLAljN9wARvmvxA=s512-rw"
+    />
+    <meta property="og:site_name" content="Wibuku" />
+    <meta property="og:locale" content="id_ID" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="Wibuku - Nonton Anime Gratis Sub Indo"
+    />
+    <meta
+      name="twitter:description"
+      content="Aplikasi nonton anime gratis dengan subtitle Indonesia. Download sekarang di Google Play Store."
+    />
+    <meta
+      name="twitter:image"
+      content="https://play-lh.googleusercontent.com/EAVnwk0BS5chgGbygHiIYu2w5OLx54GdXDZQBsdLM4rU_xZ86fPjBmLAljN9wARvmvxA=s512-rw"
+    />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "name": "Wibuku",
+            "url": "https://wibuku.com/",
+            "description": "Aplikasi nonton anime gratis dengan subtitle Indonesia"
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "Wibuku",
+            "operatingSystem": "Android",
+            "applicationCategory": "EntertainmentApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "IDR"
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.4",
+              "ratingCount": "140000"
+            },
+            "installUrl": "https://play.google.com/store/apps/details?id=wibuku.app.wibuku&hl=id",
+            "description": "Nonton anime gratis dengan subtitle Indonesia. Koleksi lengkap, streaming lancar, update harian."
+          }
+        ]
+      }
+    </script>
+
+    <link
+      rel="icon"
+      href="https://play-lh.googleusercontent.com/EAVnwk0BS5chgGbygHiIYu2w5OLx54GdXDZQBsdLM4rU_xZ86fPjBmLAljN9wARvmvxA=s32-rw"
+      type="image/webp"
+    />
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest" defer type="d9a00d214a7303e22eac2ffd-text/javascript"></script>
+    <script type="d9a00d214a7303e22eac2ffd-text/javascript">
+      document.addEventListener("DOMContentLoaded", () => lucide.createIcons());
+    </script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: #e8e8e8;
+        background: #0d0d0d;
+        -webkit-user-select: none;
+        user-select: none;
+        overflow-x: hidden;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      /* Hero */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 2rem;
+        position: relative;
+        background: radial-gradient(ellipse at 50% 0%, #2a1f00 0%, #0d0d0d 65%);
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 120px;
+        background: linear-gradient(transparent, #0d0d0d);
+      }
+      .app-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        margin-bottom: 1rem;
+        animation: fadeUp 0.6s ease both;
+        box-shadow: 0 4px 24px rgba(218, 165, 32, 0.3);
+      }
+      .logo {
+        font-size: 3.5rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+        background: linear-gradient(135deg, #ffd700, #daa520, #b8860b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        animation: fadeUp 0.8s ease both;
+      }
+      .tagline {
+        font-size: 1.15rem;
+        color: #94a3b8;
+        margin-bottom: 2rem;
+        animation: fadeUp 1s ease both;
+      }
+
+      /* Stats (inside hero) */
+      .hero-stats {
+        display: flex;
+        justify-content: center;
+        gap: 2.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+        animation: fadeUp 1.1s ease both;
+      }
+      .stat {
+        text-align: center;
+      }
+      .stat-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #ffd700, #daa520);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .stat-label {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: 0.15rem;
+      }
+
+      .hero-btns {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        animation: fadeUp 1.2s ease both;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.85rem 2rem;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #daa520, #b8860b);
+        color: #fff;
+        box-shadow: 0 4px 20px rgba(218, 165, 32, 0.3);
+      }
+      .btn-primary:hover {
+        box-shadow: 0 6px 30px rgba(218, 165, 32, 0.5);
+      }
+      .btn-premium {
+        background: linear-gradient(135deg, #ffd700, #ff8c00);
+        color: #1a1a1a;
+        box-shadow: 0 4px 20px rgba(255, 215, 0, 0.25);
+      }
+      .btn-premium:hover {
+        box-shadow: 0 6px 30px rgba(255, 215, 0, 0.45);
+      }
+      .btn i {
+        width: 18px;
+        height: 18px;
+      }
+
+      /* Scroll hint */
+      .scroll-hint {
+        position: absolute;
+        bottom: 2rem;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        opacity: 0;
+        animation: fadeUp 2s ease 1.5s forwards;
+        cursor: pointer;
+      }
+      .scroll-hint span {
+        font-size: 0.7rem;
+        color: #64748b;
+        letter-spacing: 2px;
+        font-weight: 600;
+      }
+      .scroll-hint .arrow-wrap {
+        animation: bounce 1.5s infinite;
+      }
+      .scroll-hint i {
+        color: #64748b;
+        width: 22px;
+        height: 22px;
+      }
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translateY(0);
+          opacity: 0.5;
+        }
+        50% {
+          transform: translateY(6px);
+          opacity: 1;
+        }
+      }
+
+      /* Sections */
+      section {
+        padding: 4rem 2rem;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .section-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 0.5rem;
+      }
+      .section-sub {
+        text-align: center;
+        color: #64748b;
+        margin-bottom: 2.5rem;
+        font-size: 0.95rem;
+      }
+
+      /* Features */
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 2rem 4rem;
+      }
+      .feature {
+        background: linear-gradient(145deg, #141414, #1a1a1a);
+        border: 1px solid #2a2a2a;
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: border-color 0.3s;
+      }
+      .feature:hover {
+        border-color: #daa520;
+      }
+      .feature-icon {
+        margin-bottom: 0.75rem;
+        color: #daa520;
+      }
+      .feature-icon i {
+        width: 28px;
+        height: 28px;
+      }
+      .feature h3 {
+        font-size: 1rem;
+        margin-bottom: 0.4rem;
+      }
+      .feature p {
+        font-size: 0.85rem;
+        color: #64748b;
+        line-height: 1.5;
+      }
+
+      /* Premium CTA */
+      .premium {
+        text-align: center;
+        padding: 4rem 2rem;
+        border-radius: 20px;
+        background: linear-gradient(145deg, #1a1400, #1f1800);
+        border: 1px solid #3d2e00;
+        max-width: 860px;
+        margin: 0 auto;
+      }
+      .premium .section-title {
+        background: linear-gradient(135deg, #ffd700, #ff8c00);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .premium-perks {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+        margin: 1.5rem 0 2rem;
+        list-style: none;
+      }
+      .premium-perks li {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: #ffffff0a;
+        border: 1px solid #ffffff12;
+        padding: 0.5rem 1rem;
+        border-radius: 99px;
+        font-size: 0.85rem;
+        color: #e0c068;
+      }
+      .premium-perks li i {
+        width: 14px;
+        height: 14px;
+      }
+
+      /* Reviews */
+      .reviews-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.25rem;
+      }
+      .review {
+        background: #141414;
+        border: 1px solid #2a2a2a;
+        border-radius: 14px;
+        padding: 1.25rem;
+      }
+      .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.6rem;
+      }
+      .review-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .review-stars {
+        color: #ffd700;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+      }
+      .review-text {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        line-height: 1.6;
+      }
+      .review-source {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.7rem;
+        color: #475569;
+        margin-top: 0.5rem;
+      }
+      .review-source i {
+        width: 12px;
+        height: 12px;
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: #334155;
+        font-size: 0.8rem;
+      }
+      footer a {
+        color: #daa520;
+      }
+
+      /* Animations */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Mobile */
+      @media (max-width: 600px) {
+        .app-icon {
+          width: 64px;
+          height: 64px;
+          border-radius: 16px;
+        }
+        .logo {
+          font-size: 2.5rem;
+        }
+        .tagline {
+          font-size: 1rem;
+        }
+        .hero-stats {
+          gap: 1.5rem;
+        }
+        .stat-value {
+          font-size: 1.3rem;
+        }
+        .section-title {
+          font-size: 1.4rem;
+        }
+        .premium {
+          margin: 0 1rem;
+          padding: 2.5rem 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Hero -->
+    <main>
+      <header class="hero" role="banner">
+        <img
+          class="app-icon"
+          src="https://play-lh.googleusercontent.com/EAVnwk0BS5chgGbygHiIYu2w5OLx54GdXDZQBsdLM4rU_xZ86fPjBmLAljN9wARvmvxA=s128-rw"
+          alt="Wibuku App Icon"
+          width="80"
+          height="80"
+        />
+        <h1 class="logo">Wibuku</h1>
+        <p class="tagline">
+          Nonton anime favorit kamu, gratis & subtitle Indonesia
+        </p>
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="stat-value">4.4 ★</div>
+            <div class="stat-label">Rating Play Store</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">140K+</div>
+            <div class="stat-label">Rating & Ulasan</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">300K+</div>
+            <div class="stat-label">Download / Bulan</div>
+          </div>
+        </div>
+        <div class="hero-btns">
+          <a
+            href="https://play.google.com/store/apps/details?id=wibuku.app.wibuku&hl=id"
+            class="btn btn-primary"
+          >
+            <i data-lucide="play"></i>
+            Download Gratis
+          </a>
+          <a href="https://premium.wibuku.app" class="btn btn-premium">
+            <i data-lucide="crown"></i>
+            Beli Premium
+          </a>
+        </div>
+        <div class="scroll-hint" onclick="if (!window.__cfRLUnblockHandlers) return false; 
+            window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })
+          " data-cf-modified-d9a00d214a7303e22eac2ffd-="">
+          <span>SCROLL</span>
+          <div class="arrow-wrap"><i data-lucide="chevron-down"></i></div>
+        </div>
+      </header>
+
+      <!-- Fitur -->
+      <section>
+        <h2 class="section-title">Kenapa Harus Wibuku?</h2>
+        <p class="section-sub">Tempat nonton anime paling enak buat kamu</p>
+      </section>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon"><i data-lucide="clapperboard"></i></div>
+          <h3>Koleksi Super Lengkap</h3>
+          <p>
+            Ribuan judul anime dari berbagai genre, update tiap hari biar kamu
+            gak ketinggalan.
+          </p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon"><i data-lucide="subtitles"></i></div>
+          <h3>Sub Indo Berkualitas</h3>
+          <p>
+            Semua anime udah dilengkapi subtitle Bahasa Indonesia yang rapi dan
+            enak dibaca.
+          </p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon"><i data-lucide="zap"></i></div>
+          <h3>Streaming Lancar</h3>
+          <p>
+            Server stabil, loading cepet, kualitas video sampai HD. Gak pake
+            buffer lama-lama.
+          </p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon"><i data-lucide="wallet"></i></div>
+          <h3>Gratis Selamanya</h3>
+          <p>
+            Nonton sepuasnya tanpa bayar. Mau lebih nyaman? Upgrade ke Premium
+            aja!
+          </p>
+        </div>
+      </div>
+
+      <!-- Premium -->
+      <div class="premium">
+        <h2 class="section-title">Wibuku Premium</h2>
+        <p class="section-sub">
+          Nonton anime tanpa gangguan, pengalaman paling mantap
+        </p>
+        <ul class="premium-perks">
+          <li><i data-lucide="shield-off"></i> Tanpa Iklan</li>
+          <li><i data-lucide="monitor-play"></i> Kualitas HD+</li>
+          <li><i data-lucide="badge-check"></i> Akses Prioritas</li>
+          <li><i data-lucide="rocket"></i> Server Tercepat</li>
+          <li><i data-lucide="heart-handshake"></i> Support Developer</li>
+        </ul>
+        <a href="https://premium.wibuku.app" class="btn btn-premium">
+          <i data-lucide="crown"></i>
+          Upgrade ke Premium
+        </a>
+      </div>
+
+      <!-- Ulasan -->
+      <section>
+        <h2 class="section-title">Kata Mereka tentang Wibuku</h2>
+        <p class="section-sub">Ulasan langsung dari pengguna di Google Play</p>
+        <div class="reviews-grid">
+          <div class="review">
+            <div class="review-header">
+              <span class="review-name">Rizky A.</span>
+              <span class="review-stars">★★★★★</span>
+            </div>
+            <p class="review-text">
+              App anime terbaik sih ini! Koleksinya lengkap banget, sub Indo-nya
+              juga rapi. Jarang banget nemu app segini bagusnya dan gratis pula.
+            </p>
+            <p class="review-source">
+              <i data-lucide="store"></i> Google Play Store
+            </p>
+          </div>
+          <div class="review">
+            <div class="review-header">
+              <span class="review-name">Dina P.</span>
+              <span class="review-stars">★★★★★</span>
+            </div>
+            <p class="review-text">
+              Suka banget sama tampilannya, simpel dan gampang dipake.
+              Loading-nya juga cepet. Wajib install buat wibu sejati!
+            </p>
+            <p class="review-source">
+              <i data-lucide="store"></i> Google Play Store
+            </p>
+          </div>
+          <div class="review">
+            <div class="review-header">
+              <span class="review-name">Andi W.</span>
+              <span class="review-stars">★★★★☆</span>
+            </div>
+            <p class="review-text">
+              Bagus kok, anime ongoing selalu update cepet. Kadang servernya
+              agak lemot pas jam rame, tapi overall tetep mantap lah!
+            </p>
+            <p class="review-source">
+              <i data-lucide="store"></i> Google Play Store
+            </p>
+          </div>
+          <div class="review">
+            <div class="review-header">
+              <span class="review-name">Sari M.</span>
+              <span class="review-stars">★★★★★</span>
+            </div>
+            <p class="review-text">
+              Udah pake dari versi pertama, makin kesini makin keren. Worth
+              banget upgrade ke premium, bebas iklan enak banget rasanya.
+            </p>
+            <p class="review-source">
+              <i data-lucide="store"></i> Google Play Store
+            </p>
+          </div>
+          <div class="review">
+            <div class="review-header">
+              <span class="review-name">Bayu F.</span>
+              <span class="review-stars">★★★★★</span>
+            </div>
+            <p class="review-text">
+              Akhirnya ada app buat nonton anime yang beneran gratis dan sub
+              Indo-nya bagus. Genre-nya lengkap, dari shounen sampe slice of
+              life ada semua.
+            </p>
+            <p class="review-source">
+              <i data-lucide="store"></i> Google Play Store
+            </p>
+          </div>
+          <div class="review">
+            <div class="review-header">
+              <span class="review-name">Mega L.</span>
+              <span class="review-stars">★★★★☆</span>
+            </div>
+            <p class="review-text">
+              Keren banget app-nya, streaming lancar dan banyak pilihan anime.
+              Semoga nanti ditambahin fitur download offline ya dev!
+            </p>
+            <p class="review-source">
+              <i data-lucide="store"></i> Google Play Store
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2026 Wibuku. Dibuat untuk wibu Indonesia.</p>
+      <p style="margin-top: 0.5rem">
+        <a
+          href="https://play.google.com/store/apps/details?id=wibuku.app.wibuku&hl=id"
+          >Google Play</a
+        >
+        &middot;
+        <a href="https://premium.wibuku.app">Premium</a>
+        &middot;
+        <a href="https://wibuku.app/privacy.html" target="_blank" rel="noopener"
+          >Privacy Policy</a
+        >
+      </p>
+    </footer>
+  <script src="/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="d9a00d214a7303e22eac2ffd-|49" defer></script></body>
+</html>

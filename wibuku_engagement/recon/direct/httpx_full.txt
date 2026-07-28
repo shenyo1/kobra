@@ -1,0 +1,8 @@
+https://admin.wibuku.app [502] [Cloudflare,HTTP/3]
+https://image.wibuku.app [502] [Cloudflare,HTTP/3]
+https://dbman.wibuku.app [404] [Cloudflare,HSTS,HTTP/3]
+https://pillar.wibuku.app [502] [Cloudflare,HTTP/3]
+https://panel.wibuku.app [200] [Cloudflare,HSTS,HTTP/3]
+https://front.wibuku.app [502] [Cloudflare,HTTP/3]
+https://premium.wibuku.app [200] [Wibuku Premium] [Cloudflare,Cloudflare Browser Insights,Google Sign-in,HSTS,HTTP/3,SweetAlert2:11,Unpkg,jsDelivr]
+https://airmanager.wibuku.app [200] [Air Instance Manager] [Cloudflare,Cloudflare Browser Insights,HSTS,HTTP/3,Unpkg]

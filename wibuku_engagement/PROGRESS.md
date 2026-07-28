@@ -1,0 +1,12 @@
+[T+10m] STATUS:
+- Discovered subdomains: wibuku.app, www.wibuku.app, wibuku.com, premium.wibuku.app, panel.wibuku.app, admin.wibuku.app, image.wibuku.app, s1.wibuku.app
+- Premium site uses Google OAuth (client_id: 1010948816147-d9mekc3bf50up9kccuapmu0jkj3cj3fo.apps.googleusercontent.com)
+- POST /login sends email → returns session token (e.g. captured: 100702080301050906000404221asfjBx99ADEO=QMz2yN from wayback 2026-01-22)
+- Panel.wibuku.app returns "Invalid Auth credential" for EVERY request — Firebase auth middleware catches all unauth requests
+- Admin.wibuku.app returns 502 (Cloudflare origin error → Express origin exists but unhealthy)
+- Image.wibuku.app returns 502
+- Wibuku.com is alternate domain (Cloudflare-staticsame as app)
+- Wayback captured premium session JSON: id=7168420, Fadhil Maulana, ranashah130112@gmail.com, premium status visible
+- All injections (SQLi/SSTI/mass-assign) rejected with consistent "Email tidak ditemukan" response
+- Token validation IS server-side (no client-side trust)
+- NEXT: try Android APK decompile (Google Play: wibuku.app.wibuku)

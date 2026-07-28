@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Wibuku Premium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script src="/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="465f7f1554c94ab169e92075-|49"></script><link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" /></noscript>
+    <script src="https://accounts.google.com/gsi/client" async defer type="465f7f1554c94ab169e92075-text/javascript"></script>
+    <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" type="465f7f1554c94ab169e92075-text/javascript"></script>
+    <style>
+      *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+      :root{--bg:#090d14;--surface:rgba(18,24,35,.78);--surface-hover:rgba(30,39,55,.88);--border:rgba(148,163,184,.18);--border-glow:rgba(226,232,240,.34);--text:#f8fafc;--text-dim:#94a3b8;--accent:#E5E7EB;--accent-soft:rgba(226,232,240,.16);--accent-glow:rgba(226,232,240,.32);--danger:#fb7185;--success:#E5E7EB;--radius:16px;--radius-sm:10px;--radius-pill:999px}
+      body{font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+      [data-lucide]{width:1.12em;height:1.12em;stroke-width:2.25;vertical-align:-.18em}
+
+      .bg-orbs{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;contain:strict}
+      .bg-orbs::before,.bg-orbs::after{content:"";position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;will-change:transform;animation:orbFloat 18s ease-in-out infinite alternate}
+      .bg-orbs::before{width:550px;height:550px;background:radial-gradient(circle,rgba(226,232,240,.22),transparent 65%);top:-12%;right:-12%}
+      .bg-orbs::after{width:450px;height:450px;background:radial-gradient(circle,rgba(148,163,184,.10),transparent 65%);bottom:-8%;left:-12%;animation-delay:-9s}
+      .orb-extra{position:absolute;width:350px;height:350px;border-radius:50%;filter:blur(100px);opacity:.22;background:radial-gradient(circle,rgba(14,165,233,.32),transparent 65%);top:40%;left:50%;transform:translateX(-50%);will-change:transform;animation:orbFloat 22s ease-in-out infinite alternate-reverse}
+      @keyframes orbFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-40px,30px) scale(1.1)}100%{transform:translate(20px,-20px) scale(.95)}}
+
+      .page{max-width:420px;width:100%;margin:0 auto;padding:20px 16px;display:flex;flex-direction:column;gap:16px}
+
+      .glass{background:var(--surface);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 2px 20px rgba(0,0,0,.3);contain:layout style}
+
+      /* Login card */
+      .login-card{position:relative;padding:28px 24px 24px;overflow:hidden;background:linear-gradient(180deg,rgba(30,41,59,.86),rgba(15,23,42,.72));box-shadow:0 14px 42px rgba(0,0,0,.28)}
+      .login-card::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.8;pointer-events:none}
+
+      .brand{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:24px}
+      .brand-top{display:flex;align-items:center;gap:12px}
+      .brand-icon{width:48px;height:48px;border-radius:12px;border:1px solid rgba(148,163,184,.18);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+      .brand-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.16em;color:var(--accent)}
+      .brand-title{font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.01em}
+      .brand-sub{font-size:13px;color:var(--text-dim);line-height:1.5}
+
+      .input-group{display:flex;flex-direction:column;gap:12px}
+      .input-field{width:100%;padding:14px 18px;background:rgba(15,23,42,.68);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:15px;outline:none;transition:border-color .25s,box-shadow .25s}
+      .input-field::placeholder{color:var(--text-dim)}
+      .input-field:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+
+      .btn-login{width:100%;padding:16px 24px;border:1.5px solid var(--accent);border-radius:var(--radius-sm);background:transparent;color:var(--accent);font-family:inherit;font-size:15px;font-weight:700;letter-spacing:.03em;cursor:pointer;transition:transform .2s,box-shadow .2s,background .2s;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;gap:10px}
+      .btn-login [data-lucide]{width:18px;height:18px}
+      .btn-login:hover{background:rgba(226,232,240,.10);box-shadow:0 0 20px rgba(226,232,240,.14)}
+      .btn-login:active{transform:scale(.97);background:rgba(226,232,240,.14)}
+
+      /* Divider */
+      .divider{display:flex;align-items:center;gap:14px;margin:4px 0}
+      .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--border)}
+      .divider span{font-size:12px;color:var(--text-dim);font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+
+      /* Google button */
+      .btn-google{width:100%;padding:14px 24px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:rgba(15,23,42,.52);color:var(--text);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color .25s,background .25s,transform .2s;-webkit-tap-highlight-color:transparent}
+      .btn-google:hover{border-color:rgba(148,163,184,.24);background:rgba(148,163,184,.10)}
+      .btn-google:active{transform:scale(.97)}
+      .btn-google svg{flex-shrink:0}
+
+      /* Features */
+      .features{padding:18px}
+      .feat-header{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:14px}
+      .feat-title{font-size:14px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--text)}
+      .feat-caption{font-size:11px;font-weight:600;color:var(--text-dim);white-space:nowrap}
+      .feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+      .feat-item{min-height:56px;padding:11px 12px;font-size:12px;font-weight:650;line-height:1.35;border:1px solid rgba(148,163,184,.10);border-radius:10px;background:rgba(15,23,42,.54);display:flex;align-items:center;gap:10px}
+      .feat-icon{width:30px;height:30px;border-radius:10px;padding:6px;background:rgba(226,232,240,.18);border:1px solid rgba(226,232,240,.34);color:var(--accent);flex-shrink:0;box-shadow:0 8px 18px rgba(226,232,240,.10)}
+      .feat-icon[data-lucide]{width:30px;height:30px;stroke-width:2.15}
+
+      /* Warning */
+      .warn{padding:14px 20px;font-size:12px;color:rgba(255,255,255,.72);background:rgba(15,23,42,.52);border-radius:var(--radius-sm);border:1px solid var(--border);line-height:1.5;display:flex;align-items:center;justify-content:center;gap:8px}
+      .warn [data-lucide]{color:var(--accent);flex-shrink:0}
+      .warn [data-lucide]{width:17px;height:17px}
+
+      /* Loading state */
+      .btn-login.loading,.btn-google.loading{pointer-events:none;opacity:.6}
+      @keyframes spin{to{transform:rotate(360deg)}}
+      .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--accent);border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
+
+      /* Animations */
+      .page>*{animation:fadeUp .5s ease-out both}
+      .page>*:nth-child(1){animation-delay:.05s}
+      .page>*:nth-child(2){animation-delay:.1s}
+      .page>*:nth-child(3){animation-delay:.15s}
+      .page>*:nth-child(4){animation-delay:.2s}
+      @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+      /* SweetAlert dark override */
+      .swal2-popup{background:#111827!important;color:var(--text)!important;border:1px solid var(--border)!important;border-radius:var(--radius)!important}
+      .swal2-title{color:var(--text)!important}
+      .swal2-html-container{color:var(--text-dim)!important}
+      .swal2-confirm{background:var(--accent)!important;color:var(--bg)!important;font-weight:700!important;border-radius:var(--radius-sm)!important}
+    </style>
+  </head>
+  <body>
+    <div class="bg-orbs"><div class="orb-extra"></div></div>
+
+    <div class="page">
+
+      <!-- Login Card -->
+      <div class="glass login-card">
+        <div class="brand">
+          <div class="brand-label">Wibuku Premium</div>
+          <div class="brand-top">
+            <img class="brand-icon" src="./asset/playstore.png" alt="Wibuku" width="48" height="48" />
+            <div>
+              <div class="brand-title">Masuk ke akun</div>
+              <div class="brand-sub">Kelola premium dan pembelian kamu.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <input id="email" class="input-field" type="email" placeholder="Email Wibuku" required value="" autocomplete="email" />
+          <button id="login" class="btn-login"><i data-lucide="log-in"></i> Masuk</button>
+        </div>
+
+        <div class="divider"><span>atau</span></div>
+
+        <button id="google-btn" class="btn-google" onclick="if (!window.__cfRLUnblockHandlers) return false; googleSignIn()" data-cf-modified-465f7f1554c94ab169e92075-="">
+          <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59A14.5 14.5 0 0 1 9.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.99 23.99 0 0 0 0 24c0 3.77.9 7.35 2.56 10.52l7.97-5.93z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 5.93C6.51 42.62 14.62 48 24 48z"/></svg>
+          Masuk dengan Google
+        </button>
+      </div>
+
+      <!-- Features -->
+      <div class="glass features">
+        <div class="feat-header"><div class="feat-title">Fitur Premium</div></div>
+        <div class="feat-grid">
+          <div class="feat-item"><i class="feat-icon" data-lucide="badge-check"></i> Badge Premium</div>
+          <div class="feat-item"><i class="feat-icon" data-lucide="battery-charging"></i> Unlimited Energy</div>
+          <div class="feat-item"><i class="feat-icon" data-lucide="shield-off"></i> Tanpa Iklan</div>
+          <div class="feat-item"><i class="feat-icon" data-lucide="message-circle"></i> Komentar Lebih Fleksibel</div>
+          <div class="feat-item"><i class="feat-icon" data-lucide="monitor-play"></i> Kualitas 1080P</div>
+          <div class="feat-item"><i class="feat-icon" data-lucide="picture-in-picture"></i> Mini Videoplayer</div>
+          <div class="feat-item"><i class="feat-icon" data-lucide="image"></i> Foto Profil Bergerak</div>
+          <div class="feat-item"><i class="feat-icon" data-lucide="trending-up"></i> Bonus Exp Level 50%</div>
+        </div>
+      </div>
+
+      <!-- Footer hint -->
+      <div class="warn"><i data-lucide="info"></i> Masuk menggunakan email yang terdaftar di akun Wibuku kamu</div>
+
+      <div style="text-align:center;padding:4px 0 8px">
+        <a href="https://wibuku.app/privacy.html" target="_blank" rel="noopener" style="font-size:12px;color:var(--text-dim);text-decoration:none;transition:color .2s">Privacy Policy</a>
+      </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" type="465f7f1554c94ab169e92075-text/javascript"></script>
+    <script type="465f7f1554c94ab169e92075-text/javascript">
+      var GOOGLE_CLIENT_ID = '1010948816147-d9mekc3bf50up9kccuapmu0jkj3cj3fo.apps.googleusercontent.com';
+
+      var loginBtn = document.getElementById('login');
+      var googleBtn = document.getElementById('google-btn');
+      function renderIcons() { if (window.lucide) { window.lucide.createIcons(); } }
+      document.addEventListener('DOMContentLoaded', renderIcons);
+      window.addEventListener('load', renderIcons);
+      setTimeout(renderIcons, 250);
+
+      function doLogin(email) {
+        loginBtn.classList.add('loading');
+        loginBtn.innerHTML = '<span class="spinner"></span>';
+        googleBtn.classList.add('loading');
+
+        fetch('https://premium.wibuku.app/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.status == 'success') {
+            window.location.href = 'https://premium.wibuku.app/?session=' + data.data;
+          } else {
+            Swal.fire({ title: data.error, text: 'Harap masukkan email akun kamu di Wibuku yang benar', icon: 'error', confirmButtonText: 'Tutup' });
+          }
+        })
+        .catch(function(err) {
+          Swal.fire({ title: 'Ada kesalahan', text: String(err), icon: 'error', confirmButtonText: 'Tutup' });
+        })
+        .finally(function() {
+          loginBtn.classList.remove('loading');
+          loginBtn.innerHTML = '<i data-lucide="log-in"></i> Masuk';
+          renderIcons();
+          googleBtn.classList.remove('loading');
+        });
+      }
+
+      // Email login
+      loginBtn.addEventListener('click', function() {
+        var email = document.getElementById('email').value.trim();
+        if (!email) {
+          Swal.fire({ title: 'Email Kosong', text: 'Harap masukkan email akun kamu di Wibuku yang benar', icon: 'error', confirmButtonText: 'Tutup' });
+          return;
+        }
+        doLogin(email);
+      });
+
+      // Enter key on input
+      document.getElementById('email').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') loginBtn.click();
+      });
+
+      // Google Sign-In
+      function handleGoogleCredential(response) {
+        try {
+          var payload = JSON.parse(atob(response.credential.split('.')[1]));
+          var email = payload.email;
+          if (email) {
+            doLogin(email);
+          } else {
+            Swal.fire({ title: 'Gagal', text: 'Tidak bisa mendapatkan email dari akun Google', icon: 'error', confirmButtonText: 'Tutup' });
+          }
+        } catch(e) {
+          Swal.fire({ title: 'Gagal', text: 'Error memproses login Google', icon: 'error', confirmButtonText: 'Tutup' });
+        }
+      }
+
+      var gsiReady = false;
+      function initGSI() {
+        if (gsiReady || typeof google === 'undefined' || !google.accounts) return;
+        gsiReady = true;
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredential,
+          auto_select: false,
+        });
+      }
+
+      function googleSignIn() {
+        if (typeof google === 'undefined' || !google.accounts) {
+          Swal.fire({ title: 'Loading...', text: 'Google Sign-In belum siap, coba lagi', icon: 'info', confirmButtonText: 'OK' });
+          return;
+        }
+        initGSI();
+        google.accounts.id.prompt(function(notification) {
+          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            // Fallback: use popup mode
+            google.accounts.oauth2.initCodeClient({
+              client_id: GOOGLE_CLIENT_ID,
+              scope: 'email profile',
+              ux_mode: 'popup',
+              callback: function(resp) {
+                // Code flow won't give us email directly, use the id token approach
+              }
+            });
+            // Use the simpler approach: renderButton in a hidden div
+            var tmpDiv = document.createElement('div');
+            tmpDiv.style.position = 'fixed';
+            tmpDiv.style.top = '-9999px';
+            document.body.appendChild(tmpDiv);
+            google.accounts.id.renderButton(tmpDiv, {
+              type: 'standard',
+              theme: 'filled_black',
+              size: 'large',
+            });
+            // Click the rendered button
+            setTimeout(function() {
+              var innerBtn = tmpDiv.querySelector('[role=button]') || tmpDiv.querySelector('div[style]');
+              if (innerBtn) innerBtn.click();
+              setTimeout(function() { document.body.removeChild(tmpDiv); }, 5000);
+            }, 300);
+          }
+        });
+      }
+
+      // Try init GSI when library loads
+      window.addEventListener('load', function() {
+        setTimeout(initGSI, 500);
+      });
+
+      // Auto-login if email is pre-filled
+      var prefilled = document.getElementById('email').value;
+      if (prefilled && prefilled.trim() !== '') {
+        loginBtn.click();
+      }
+    </script>
+  <script src="/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="465f7f1554c94ab169e92075-|49" defer></script></body>
+</html>

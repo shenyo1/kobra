@@ -1,0 +1,67 @@
+=== wibuku.app ===
+HTTP/2 200 
+server: cloudflare
+---
+=== www.wibuku.app ===
+---
+=== panel.wibuku.app ===
+HTTP/2 204 
+access-control-allow-headers: Origin,Content-Type,Accept
+access-control-allow-methods: GET,POST,HEAD,PUT,DELETE,PATCH
+access-control-allow-origin: 
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+server: cloudflare
+---
+=== premium.wibuku.app ===
+HTTP/2 204 
+access-control-allow-headers: Origin,Content-Type,Accept
+access-control-allow-methods: GET,POST,HEAD,PUT,DELETE,PATCH
+vary: Access-Control-Request-Method, Access-Control-Request-Headers, Origin
+server: cloudflare
+---
+=== admin.wibuku.app ===
+HTTP/2 204 
+access-control-allow-headers: Origin,Content-Type,Accept
+access-control-allow-methods: GET,POST,HEAD,PUT,DELETE,PATCH
+access-control-allow-origin: *
+vary: Access-Control-Request-Method, Access-Control-Request-Headers, Origin
+server: cloudflare
+---
+=== image.wibuku.app ===
+HTTP/2 204 
+access-control-allow-headers: Origin,Content-Type,Accept,imagename
+access-control-allow-methods: GET,POST,HEAD,PUT,DELETE,PATCH
+access-control-allow-origin: *
+vary: Access-Control-Request-Method, Access-Control-Request-Headers, Origin
+server: cloudflare
+---
+=== airmanager.wibuku.app ===
+HTTP/2 204 
+access-control-allow-headers: X-Custom-Header
+access-control-allow-methods: GET,POST,HEAD,PUT,DELETE,PATCH
+access-control-allow-origin: *
+vary: Access-Control-Request-Method, Access-Control-Request-Headers, Origin
+server: cloudflare
+---
+=== dbman.wibuku.app ===
+HTTP/2 404 
+server: cloudflare
+---
+=== pillar.wibuku.app ===
+HTTP/2 204 
+access-control-allow-headers: Origin,Content-Type,Accept
+access-control-allow-methods: GET,POST,HEAD,PUT,DELETE,PATCH
+access-control-allow-origin: *
+vary: Access-Control-Request-Method, Access-Control-Request-Headers, Origin
+server: cloudflare
+---
+=== front.wibuku.app ===
+HTTP/2 204 
+access-control-allow-headers: Origin,Content-Type,Accept,Authorization
+access-control-allow-methods: GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS
+access-control-allow-origin: *
+server: cloudflare
+vary: Access-Control-Request-Method, Access-Control-Request-Headers, Origin
+---
+=== s1.wibuku.app ===
+---

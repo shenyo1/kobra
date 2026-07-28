@@ -1,0 +1,1 @@
+{"error":"Resource not found","error_type":"NOT_FOUND","method":"GET","path":"/api/v1/subdomains/wibuku.app","timestamp":"2026-07-26T22:13:45.206042"}

@@ -1,0 +1,14 @@
+=== GET https://premium.wibuku.app/api/v1/ ===
+HTTP/2 404 
+date: Sun, 26 Jul 2026 22:21:28 GMT
+content-type: text/plain; charset=utf-8
+content-length: 19
+vary: Origin
+cf-cache-status: DYNAMIC
+strict-transport-security: max-age=0; includeSubDomains; preload
+x-content-type-options: nosniff
+server: cloudflare
+cf-ray: a216cc2b8a5203c6-ICN
+alt-svc: h3=":443"; ma=86400
+
+--- size 19 ---

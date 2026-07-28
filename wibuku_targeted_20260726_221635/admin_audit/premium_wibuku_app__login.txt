@@ -1,0 +1,15 @@
+=== GET https://premium.wibuku.app/login ===
+HTTP/2 405 
+date: Sun, 26 Jul 2026 22:21:26 GMT
+content-type: text/plain; charset=utf-8
+content-length: 18
+allow: POST
+vary: Origin
+cf-cache-status: DYNAMIC
+strict-transport-security: max-age=0; includeSubDomains; preload
+x-content-type-options: nosniff
+server: cloudflare
+cf-ray: a216cc1e6c3b03c6-ICN
+alt-svc: h3=":443"; ma=86400
+
+--- size 18 ---

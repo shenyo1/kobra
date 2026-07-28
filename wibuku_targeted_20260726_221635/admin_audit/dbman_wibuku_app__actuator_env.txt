@@ -1,0 +1,11 @@
+=== GET https://dbman.wibuku.app/actuator/env ===
+HTTP/2 404 
+date: Sun, 26 Jul 2026 22:21:35 GMT
+cf-cache-status: DYNAMIC
+strict-transport-security: max-age=0; includeSubDomains; preload
+x-content-type-options: nosniff
+server: cloudflare
+cf-ray: a216cc596ca703c6-ICN
+alt-svc: h3=":443"; ma=86400
+
+--- size 0 ---
