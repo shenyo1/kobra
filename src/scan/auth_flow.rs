@@ -49,7 +49,18 @@ pub fn classify_auth_flow(headers: &str, body: &str) -> AuthFlow {
 /// Probe target for auth endpoints.
 pub async fn scan(http: &HttpClient, target: &str, _mode: Mode) -> Vec<Finding> {
     let mut findings = Vec::new();
-    let base = target.trim_end_matches('/');
+    // Parse base URL: strip path/query to root (Lesson 2 v4.4.0 fix)
+    let base = {
+        let u = target.trim_end_matches('/');
+        let (proto, rest) = if u.contains("://") {
+            let idx = u.find("://").unwrap();
+            (u[..idx + 3].to_string(), u[idx + 3..].to_string())
+        } else {
+            ("https://".to_string(), u.to_string())
+        };
+        let path_start = rest.find('/').unwrap_or(rest.len());
+        format!("{}{}", proto, &rest[..path_start])
+    };
 
     // Probe common auth endpoints
     let auth_paths = [

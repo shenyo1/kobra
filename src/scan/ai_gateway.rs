@@ -47,7 +47,18 @@ pub fn classify_ai_response(body: &str, _h: &str, server: &str) -> Option<(&'sta
 
 pub async fn scan(http: &HttpClient, target: &str, _mode: Mode) -> Vec<Finding> {
     let mut findings = Vec::new();
-    let base = target.trim_end_matches('/');
+    // Parse base URL: strip path/query to root (Lesson 4 v4.4.0 fix)
+    let base = {
+        let u = target.trim_end_matches('/');
+        let (proto, rest) = if u.contains("://") {
+            let idx = u.find("://").unwrap();
+            (u[..idx + 3].to_string(), u[idx + 3..].to_string())
+        } else {
+            ("https://".to_string(), u.to_string())
+        };
+        let path_start = rest.find('/').unwrap_or(rest.len());
+        format!("{}{}", proto, &rest[..path_start])
+    };
     for path in AI_PATHS {
         let url = format!("{}{}", base, path);
         if let Ok((status, headers, body, _f)) = http.get(&url).await {
@@ -56,12 +67,19 @@ pub async fn scan(http: &HttpClient, target: &str, _mode: Mode) -> Vec<Finding> 
                 .unwrap_or("")
                 .to_string();
             if let Some((vendor, desc)) = classify_ai_response(&body, &headers, &server) {
-                let severity = if path.contains("chat") || path.contains("embedding") {
+                // Severity based on exposure level
+                let severity = if path.contains("chat") || path.contains("embedding") || path.contains("files") {
+                    // Write/sensitive endpoints = Medium
                     Severity::Medium
-                } else if path.contains("models") {
+                } else if path.contains("models") || path.contains("assistants") {
+                    // Read-only listing = Low
+                    Severity::Low
+                } else if path.contains("health") {
+                    // Health probes = Info
                     Severity::Info
                 } else {
-                    Severity::Low
+                    // Unknown endpoints = Info (presence)
+                    Severity::Info
                 };
                 findings.push(Finding {
                     severity,
