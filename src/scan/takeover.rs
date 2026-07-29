@@ -134,6 +134,41 @@ pub async fn scan(http: &HttpClient, target: &str, _mode: Mode) -> Vec<Finding> 
         let url = format!("https://{}", sub);
         if let Ok((_st, _h, body, _f)) = http.get(&url).await {
             if let Some((svc, confidence)) = match_takeover(&body) {
+                // v4.4.0 Lesson 1: filter Cloudflare FPs (api-gate-v2 sumopod case)
+                // aws-elastic/heroku/etc are NOT behind CF — but if we see a CF header,
+                // this is Cloudflare itself, not an unclaimed service.
+                let cf_hint = body.contains("cloudflare") || body.contains("cf-ray")
+                    || body.contains("cf-cache-status") || body.to_lowercase().contains("server: cloudflare");
+                // Resolve subdomain to check IP directly
+                use std::process::Command;
+                let ip_check = Command::new("dig")
+                    .args(&["+short", &format!("{}.", sub), "A"])
+                    .output()
+                    .ok()
+                    .and_then(|o| String::from_utf8(o.stdout).ok())
+                    .map(|s| s.trim().to_string())
+                    .unwrap_or_default();
+                let cf_ip = !ip_check.is_empty() && crate::scan::cloudflare_ranges::is_cloudflare(&ip_check);
+                if cf_hint || cf_ip {
+                    // Downgrade to Info / skip
+                    findings.push(Finding {
+                        severity: Severity::Info,
+                        category: "TAKEOVER".into(),
+                        title: format!("Takeover filter: {} points to Cloudflare (FP)", sub),
+                        target: url.clone(),
+                        param: None,
+                        payload: None,
+                        evidence: Some(format!(
+                            "Subdomain {} matched takeover sig but resolves to Cloudflare ({}). Auto-filtered FP.",
+                            sub, ip_check
+                        )),
+                        confidence: confidence.min(50),
+                        note: Some("Lesson 1 fix v4.4.0: CF IPs are not takeover candidates.".into()),
+                        request: None,
+                        response: None,
+                    });
+                    continue;
+                }
                 findings.push(Finding {
                     severity: if confidence >= 90 { Severity::Critical } else { Severity::High },
                     category: "TAKEOVER".into(),

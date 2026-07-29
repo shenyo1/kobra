@@ -52,6 +52,10 @@ pub mod waf_learn;     // WAF Learning Mode — detect + bypass suggestions
 pub mod tech_fingerprint; // Tech fingerprinting — detect frameworks/CMS/servers
 pub mod stack_fingerprint; // v4.2.0: Stack fingerprint — SPA/server/API style (fixes generic-payload FP)
 pub mod auth_aware;       // v4.3.0: Auth-aware probing — expand paths when --auth configured
+pub mod cloudflare_ranges; // v4.4.0: Cloudflare IP detection — filter takeover FPs (Lesson 1)
+pub mod ai_gateway;        // v4.4.0: AI gateway detector — LiteLLM/vLLM/OpenAI (Lesson 4)
+pub mod dns_pivot;         // v4.4.0: DNS pivot — group subdomains by IP, probe direct origins (Lesson 3)
+pub mod auth_flow;        // v4.4.0: Auth flow detector — JWT/cookie/Basic/OAuth/API-key (Lesson 2)
 pub mod idor;          // Multi-session IDOR testing — compare two auth sessions
 pub mod fuzz;          // Wordlist fuzzing — ffuf-style path + param fuzzing
 pub mod passive;       // Passive proxy mode — analyze traffic without active probes
@@ -138,6 +142,9 @@ pub async fn run_all(
     findings.extend(header_trust::scan(http, target, mode).await);
     findings.extend(api_discovery::scan(http, target, mode).await?);
     findings.extend(auth_aware::scan(http, target, mode).await);
+    findings.extend(ai_gateway::scan(http, target, mode).await);
+    findings.extend(dns_pivot::scan(http, target, mode).await);
+    findings.extend(auth_flow::scan(http, target, mode).await);
     findings.extend(cors_deep::scan(http, target, mode).await?);
     // Plugin modules
     findings.extend(plugin::scan_with_plugins(http, target, plugins).await);

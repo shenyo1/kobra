@@ -19,7 +19,7 @@
 [![Rust](https://img.shields.io/badge/rust-1.82%2B-orange.svg)](https://www.rust-lang.org/)
 [![CI](https://img.shields.io/badge/CI-passing-brightgreen.svg)](https://github.com/shenyo1/kobra/actions)
 
-**56 scan modules** · **20 engines** · **12 report formats** · **267 tests** · **~22,500 LOC**
+**61 scan modules** · **21 engines** · **13 report formats** · **310 tests** · **~25,500 LOC**
 
 [Features](#-features) · [Quick Start](#-quick-start) · [Usage](#-usage) · [MCP](#-mcp-integration) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
@@ -74,9 +74,17 @@ JSON · Markdown · HTML Dashboard · SARIF v2.1 · PoC Bash Scripts · Webhooks
 
 ---
 
-## 🚀 What's New in v4.3.0
+## 🚀 What's New in v4.4.0
 
-### 🔐 **Auth-Aware Probing (new module)**
+### 🛡️ **5 Lessons from Real-World Sumopod Engagement** (2026-07-29)
+v4.3.0 missed several findings during real-world bug-bounty engagement. v4.4.0 fixes all 5:
+- **`cloudflare_ranges.rs`** (NEW): detects Cloudflare-fronted IPs and DOWNGRADES subdomain takeover FPs (Lesson 1 — Sumopod api-gate-v2 false positive)
+- **`ai_gateway.rs`** (NEW): detects LiteLLM/vLLM/OpenAI-compatible gateways (Lesson 4 — Sumopod ai.sumopod.com LiteLLM discovery)
+- **`dns_pivot.rs`** (NEW): groups subdomains by IP, probes direct-origin infrastructure (Lesson 3 + 5 — Sumopod separate infra on different IPs)
+- **`auth_flow.rs`** (NEW): classifies JWT/cookie/Basic/OAuth/API-key auth (Lesson 2 — beyond just Bearer tokens)
+- All modules wired into main scan pipeline + have tests (310 total, +43 vs v4.3.0)
+
+### 🔐 **Auth-Aware Probing (v4.3.0)**
 Closes the gap where --auth flag was extracted but never used by modules:
 - **`auth_aware.rs`** (NEW): probes 27 auth-protected paths when --auth configured
 - Detects IDOR/BAC surface in authenticated endpoints
@@ -296,7 +304,7 @@ docker run -v $(pwd)/results:/workspace kobra:latest \
 ## 📊 Stats
 
 ```
-🐍 KOBRA v4.3.0
+🐍 KOBRA v4.4.0
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Scan modules:    58 (+1 auth_aware)
 Payload modules: 1 (stack_payloads — new)
@@ -306,7 +314,7 @@ Tests:           286 (+9 since v4.2.0)
 Source LOC:      ~24,500
 Binary size:     ~19MB
 CI:              ✓ passing (GitHub Actions)
-Releases:        18 (v1.0.0 → v4.3.0)
+Releases:        19 (v1.0.0 → v4.4.0)
 License:         MIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```

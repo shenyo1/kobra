@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-KOBRA v4.3.0 MCP server — exposes FULL KOBRA suite as MCP tools over stdio.
-Supports ALL v4.3.0 features: auth-aware probing + stack-specific payloads + v4.2.0 SPA fallback + v4.1.0 suites (nuclei compat, IDOR, tech fingerprint, SARIF,
+KOBRA v4.4.0 MCP server — exposes FULL KOBRA suite as MCP tools over stdio.
+Supports ALL v4.4.0 features: 5 lessons from real-world CF filter + AI gateway + DNS pivot + auth flow + origin probe + v4.3.0 auth-aware + stack-specific payloads + v4.2.0 SPA fallback + v4.1.0 suites (nuclei compat, IDOR, tech fingerprint, SARIF,
 screenshots, passive proxy, wordlist fuzzing, diff scan, cross-target chain, watch mode.
 
 Setup:
