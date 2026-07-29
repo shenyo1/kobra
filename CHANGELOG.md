@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-07-29 — Intelligence Layer
+
+### Added
+- **OOB Callback Engine** (`src/oob/mod.rs`) — blind SSRF/RCE/XXE/SQLi detection via DNS/HTTP callbacks
+- **Smart Mutation Engine v2** (`src/engine/mutator_v2.rs`) — context-aware payload mutation with WAF bypass
+- **Exploit Verification Engine** (`src/engine/exploit_verify.rs`) — non-destructive vuln verification
+
+### Stats
+- 54 scan + 16 engine + 10 report = 80 modules
+- 232 tests passing (was 194)
+- 16 releases (was 15)
+
+[4.0.0]: https://github.com/shenyo1/kobra/compare/v3.3.2...v4.0.0
+
 ## [3.3.2] - 2026-07-29 — CI/SARIF Hotfix
 
 ### Fixed
