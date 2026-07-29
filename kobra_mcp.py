@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-KOBRA v2.0.0 MCP server — exposes FULL KOBRA suite as MCP tools over stdio.
-Supports ALL v2.0.0 features: nuclei compat, IDOR, tech fingerprint, SARIF,
+KOBRA v3.3.0 MCP server — exposes FULL KOBRA suite as MCP tools over stdio.
+Supports ALL v3.3.0 features + Supabase/PostgREST: nuclei compat, IDOR, tech fingerprint, SARIF,
 screenshots, passive proxy, wordlist fuzzing, diff scan, cross-target chain, watch mode.
 
 Setup:
@@ -117,7 +117,7 @@ async def list_tools():
     return [
         types.Tool(
             name="scan_target",
-            description="Run KOBRA v2.0 scanner on target(s). Supports ALL features: auth, IDOR, nuclei templates, wordlist, browser, screenshots, SARIF, diff, webhooks. mode: stealth|normal|crazy.",
+            description="Run KOBRA v3.3 scanner on target(s). Supports ALL features: auth, IDOR, nuclei templates, wordlist, browser, screenshots, SARIF, diff, webhooks. mode: stealth|normal|crazy.",
             inputSchema={
                 "type": "object",
                 "properties": {
