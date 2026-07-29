@@ -28,7 +28,7 @@ pub async fn send_slack(webhook_url: &str, findings: &[Finding], engagement: &st
                 {"title": "Medium", "value": medium.to_string(), "short": true},
                 {"title": "Total Findings", "value": total.to_string(), "short": true},
             ],
-            "footer": "KOBRA v3.1",
+            "footer": "KOBRA v3.2",
             "ts": chrono_now(),
         }]
     });

@@ -10,7 +10,7 @@ use kobra::types::{Mode, Severity};
 use std::sync::Arc;
 
 #[derive(Parser)]
-#[command(name = "kobra", version, about = "KOBRA v3.1 — takeover v2 + rate bypass + CI/CD + Docker")]
+#[command(name = "kobra", version, about = "KOBRA v3.2 — diff dashboard + WS deep + scan profiles")]
 struct Cli {
     /// Target URL(s). Comma-separated for multiple.
     #[arg(short, long, value_delimiter = ',')]
@@ -298,7 +298,7 @@ async fn main() -> anyhow::Result<()> {
   ██  ██      ██   █ █▄▄█ █▀▀▌
   ██  ██      ▀████▀ █  █ █  █
   ▀█   ▀        ▀        █  █
-        KOBRA v3.1 — all-in-one BB scanner (OVERPOWERED)\x1b[0m"
+        KOBRA v3.2 — all-in-one BB scanner (OVERPOWERED)\x1b[0m"
     );
     println!("[*] mode={:?} concurrency={} timeout={}s", mode, conc, cli.timeout);
 
