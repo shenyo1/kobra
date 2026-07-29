@@ -65,7 +65,12 @@ impl HttpClient {
             }
         }
         if let Some(b) = body {
-            req = req.header("Content-Type", "application/x-www-form-urlencoded").body(b.to_string());
+            // v4.3.0: detect JSON body and set correct Content-Type (fixes Juice Shop login).
+            if b.trim_start().starts_with('{') || b.trim_start().starts_with('[') {
+                req = req.header("Content-Type", "application/json").body(b.to_string());
+            } else {
+                req = req.header("Content-Type", "application/x-www-form-urlencoded").body(b.to_string());
+            }
         }
         let resp = req.send().await?;
         let status = resp.status().as_u16();

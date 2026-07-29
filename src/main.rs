@@ -257,16 +257,25 @@ async fn main() -> anyhow::Result<()> {
             let auth_body = &auth_str[pipe_pos+1..];
             println!("[*] authenticating at: {}", auth_url);
             match http.fetch(auth_url, reqwest::Method::POST, Some(auth_body), None).await {
+                // v4.3.0: hint to user if body looks like JSON (form-urlencoded won't work for JSON APIs)
                 Ok((st, _h, body, _f)) => {
                     println!("[+] auth response: HTTP {}", st);
                     // Try to extract token from response
                     if let Ok(json) = serde_json::from_str::<serde_json::Value>(&body) {
-                        if let Some(token) = json.get("token").and_then(|t| t.as_str()) {
+                        // v4.3.0: nested `authentication.token` (Juice Shop style).
+                        let auth_obj = json.get("authentication").unwrap_or(&json);
+                        if let Some(token) = auth_obj.get("token").and_then(|t| t.as_str()) {
+                            auth_headers.push(("Authorization".into(), format!("Bearer {}", token)));
+                            println!("[+] extracted Bearer token from auth.authentication.token");
+                        } else if let Some(token) = json.get("token").and_then(|t| t.as_str()) {
                             auth_headers.push(("Authorization".into(), format!("Bearer {}", token)));
                             println!("[+] extracted Bearer token from auth response");
                         } else if let Some(access) = json.get("access_token").and_then(|t| t.as_str()) {
                             auth_headers.push(("Authorization".into(), format!("Bearer {}", access)));
                             println!("[+] extracted access_token from auth response");
+                        } else if let Some(jwt) = json.get("jwt").and_then(|t| t.as_str()) {
+                            auth_headers.push(("Authorization".into(), format!("Bearer {}", jwt)));
+                            println!("[+] extracted JWT from auth response");
                         } else if let Some(session) = json.get("session").or_else(|| json.get("session_id")).or_else(|| json.get("sid")).and_then(|t| t.as_str()) {
                             auth_headers.push(("Cookie".into(), format!("session={}", session)));
                             println!("[+] extracted session cookie from auth response");

@@ -51,6 +51,7 @@ pub mod crawler;       // Basic crawler — JS endpoints, sitemap, robots, links
 pub mod waf_learn;     // WAF Learning Mode — detect + bypass suggestions
 pub mod tech_fingerprint; // Tech fingerprinting — detect frameworks/CMS/servers
 pub mod stack_fingerprint; // v4.2.0: Stack fingerprint — SPA/server/API style (fixes generic-payload FP)
+pub mod auth_aware;       // v4.3.0: Auth-aware probing — expand paths when --auth configured
 pub mod idor;          // Multi-session IDOR testing — compare two auth sessions
 pub mod fuzz;          // Wordlist fuzzing — ffuf-style path + param fuzzing
 pub mod passive;       // Passive proxy mode — analyze traffic without active probes
@@ -73,6 +74,12 @@ pub async fn run_all(
     templates: &[crate::engine::template::Template],
 ) -> Result<Vec<Finding>> {
     let mut findings = Vec::new();
+
+    // Fix v4.3.0: stack fingerprint FIRST — downstream modules pick stack-aware payloads.
+    let stack = stack_fingerprint::fingerprint(http, target).await;
+    if !stack.framework_hint.is_empty() {
+        eprintln!("[*] stack fingerprint: {}", stack.framework_hint);
+    }
     let mut ps: Vec<String> = if params.is_empty() {
         vec!["q".to_string(), "id".to_string(), "search".to_string(), "url".to_string(),
              "file".to_string(), "input".to_string(), "redirect".to_string(), "next".to_string()]
@@ -130,6 +137,7 @@ pub async fn run_all(
     findings.extend(cve_2026::scan(http, target, mode).await);
     findings.extend(header_trust::scan(http, target, mode).await);
     findings.extend(api_discovery::scan(http, target, mode).await?);
+    findings.extend(auth_aware::scan(http, target, mode).await);
     findings.extend(cors_deep::scan(http, target, mode).await?);
     // Plugin modules
     findings.extend(plugin::scan_with_plugins(http, target, plugins).await);

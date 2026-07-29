@@ -52,7 +52,7 @@ Target → KOBRA → Findings (JSON/MD/HTML/SARIF)
 
 ## ✨ Features
 
-### 🔍 Scan Modules (57)
+### 🔍 Scan Modules (58)
 - **Web**: XSS, SQLi, SSRF, SSTI, RCE, XXE, Command Injection
 - **API**: IDOR, Mass Assignment, GraphQL, OAuth, JWT, OpenAPI/Swagger
 - **Auth**: Magic-link ATO, Multi-tenant, Session, Cookie
@@ -73,6 +73,26 @@ Target → KOBRA → Findings (JSON/MD/HTML/SARIF)
 JSON · Markdown · HTML Dashboard · SARIF v2.1 · PoC Bash Scripts · Webhooks (Slack/Discord/Generic) · Diff Dashboard · Plain Output · Simple (Bahasa ID)
 
 ---
+
+## 🚀 What's New in v4.3.0
+
+### 🔐 **Auth-Aware Probing (new module)**
+Closes the gap where --auth flag was extracted but never used by modules:
+- **`auth_aware.rs`** (NEW): probes 27 auth-protected paths when --auth configured
+- Detects IDOR/BAC surface in authenticated endpoints
+- Emits informational finding when --auth NOT configured (so user knows to opt in)
+- Tests: 2 new (paths_count, paths_have_api_prefix)
+
+### 🎯 **Stack-Specific Payloads (new module)**
+Tailors payloads to detected framework instead of generic:
+- **`stack_payloads.rs`** (NEW): 4 payload categories (magic-link, sqli, graphql, xss)
+- Framework-specific: Angular uses `/api/v1/auth/magic`, React uses `data:text/html`, PHP uses UNION SELECT
+- Used by downstream scanners to pick right payloads
+- Tests: 7 new (Angular, PHP, default UNION, Angular `/gql`, React `data:`, MAGIC-LINK routing, unknown=None)
+
+### 🔬 **Stack Fingerprint Wired**
+- `run_all()` now calls fingerprint FIRST, logs `framework_hint` to stderr
+- Stack-aware payload database ready for full integration
 
 ## 🚀 What's New in v4.2.0
 
@@ -276,16 +296,17 @@ docker run -v $(pwd)/results:/workspace kobra:latest \
 ## 📊 Stats
 
 ```
-🐍 KOBRA v4.2.0
+🐍 KOBRA v4.3.0
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Scan modules:    57 (+1 stack_fingerprint)
-Engine modules:  21 (+1 SPA-fallback FP patterns in ai_triage)
-Report formats:  13 (+0)
-Tests:           277 (+10 since v4.1.0)
-Source LOC:      ~23,500
+Scan modules:    58 (+1 auth_aware)
+Payload modules: 1 (stack_payloads — new)
+Engine modules:  21
+Report formats:  13
+Tests:           286 (+9 since v4.2.0)
+Source LOC:      ~24,500
 Binary size:     ~19MB
 CI:              ✓ passing (GitHub Actions)
-Releases:        17 (v1.0.0 → v4.2.0)
+Releases:        18 (v1.0.0 → v4.3.0)
 License:         MIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
