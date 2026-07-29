@@ -102,5 +102,40 @@ echo "→ Global stale refs (28)..."
 STALE=$(grep -rn "v[0-9]\.[0-9]\.[0-9]" --include="*.rs" --include="*.md" --include="*.toml" --include="*.yml" src/ README.md HERMES_SETUP.md CHANGELOG.md 2>/dev/null | grep -v "$NEW_VERSION" | grep -v "// v[0-9]\.[0-9]\.[0-9]" | grep -v "v[0-9]\.[0-9]\.x" | grep -v target/ | grep -v ".git/" | wc -l)
 if [ "$STALE" -eq 0 ]; then echo "  ✓ No stale refs"; else echo "  ⚠ $STALE potential stale refs (verify manually)"; fi
 
+# 29: CHANGELOG.md current version
+echo ""
+echo "→ CHANGELOG sync (29)..."
+if grep -q "## \[$NEW_VERSION\]" CHANGELOG.md; then echo "  ✓ CHANGELOG.md has v$NEW_VERSION entry"
+else echo "  ⚠ CHANGELOG.md missing entry for v$NEW_VERSION"; fi
+
+# 30: README version badge
+echo ""
+echo "→ README version badge (30)..."
+if grep -q "version-v$NEW_VERSION" README.md; then echo "  ✓ README badge matches v$NEW_VERSION"
+else echo "  ⚠ README badge version != v$NEW_VERSION"; fi
+
+# 31: README test count
+echo ""
+echo "→ README test count (31)..."
+TEST_BADGE=$(grep -oP 'tests-\K[0-9]+' README.md | head -1)
+TEST_ACTUAL=$(grep -rE "#\[test\]|#\[tokio::test\]" src/ tests/ 2>/dev/null | wc -l)
+if [ "$TEST_BADGE" = "$TEST_ACTUAL" ]; then echo "  ✓ Test count matches ($TEST_ACTUAL)"
+else echo "  ⚠ README badge says $TEST_BADGE tests, actual is $TEST_ACTUAL"; fi
+
+# 32: README install URL points to latest tag
+echo ""
+echo "→ README install URL (32)..."
+INSTALL_TAG=$(grep -oP 'releases/download/v\K[0-9.]+' README.md | head -1)
+if [ "$INSTALL_TAG" = "$NEW_VERSION" ]; then echo "  ✓ Install URL points to v$NEW_VERSION"
+else echo "  ⚠ README install URL points to v$INSTALL_TAG, latest is v$NEW_VERSION"; fi
+
+# 33: README scan module count
+echo ""
+echo "→ Scan module count (33)..."
+SCAN_ACTUAL=$(ls src/scan/*.rs 2>/dev/null | grep -v mod.rs | wc -l)
+SCAN_BADGE=$(grep -oP '\*\*\K[0-9]+(?= scan module)' README.md | head -1)
+if [ "$SCAN_BADGE" = "$SCAN_ACTUAL" ]; then echo "  ✓ Scan modules: $SCAN_ACTUAL"
+else echo "  ⚠ README says $SCAN_BADGE scan modules, actual is $SCAN_ACTUAL"; fi
+
 echo ""
 echo "═══ CHECK COMPLETE ═══"

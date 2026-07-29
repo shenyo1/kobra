@@ -12,14 +12,14 @@
 
 ### The Overpowered All-in-One Scanner for Authorized Security Testing
 
-[![Version](https://img.shields.io/badge/version-v4.0.0-blue.svg)](https://github.com/shenyo1/kobra/releases/tag/v4.0.0)
-[![Tests](https://img.shields.io/badge/tests-194%20passing-brightgreen.svg)]()
+[![Version](https://img.shields.io/badge/version-v4.4.0-blue.svg)](https://github.com/shenyo1/kobra/releases/tag/v4.4.0)
+[![Tests](https://img.shields.io/badge/tests-313%20passing-brightgreen.svg)]()
 [![Warnings](https://img.shields.io/badge/warnings-0-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-1.82%2B-orange.svg)](https://www.rust-lang.org/)
 [![CI](https://img.shields.io/badge/CI-passing-brightgreen.svg)](https://github.com/shenyo1/kobra/actions)
 
-**61 scan modules** · **21 engines** · **13 report formats** · **310 tests** · **~25,500 LOC**
+**59 scan modules** · **19 engines** · **12 report formats** · **313 tests** · **~25,500 LOC**
 
 [Features](#-features) · [Quick Start](#-quick-start) · [Usage](#-usage) · [MCP](#-mcp-integration) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
@@ -128,12 +128,12 @@ Re-tested vs OWASP Juice Shop: **3 magic-link FPs eliminated**, security.txt cor
 
 ```bash
 # Download latest release
-curl -L https://github.com/shenyo1/kobra/releases/download/v4.0.0/kobra -o ~/.local/bin/kobra
+curl -L https://github.com/shenyo1/kobra/releases/download/v4.4.0/kobra -o ~/.local/bin/kobra
 chmod +x ~/.local/bin/kobra
 
 # Verify
 kobra --version
-# 🐍 kobra 3.3.2
+# 🐍 kobra 4.4.0
 ```
 
 ### First scan (1 minute)
@@ -145,7 +145,7 @@ kobra -t https://your-authorized-target.com -m crazy --no-confirm --simple
 
 Sample output:
 ```
-🐍 KOBRA v4.0.0 — all-in-one BB scanner (OVERPOWERED)
+🐍 KOBRA v4.4.0 — all-in-one BB scanner (OVERPOWERED)
 [*] mode=Crazy concurrency=60 timeout=15s
 
 [+] https://target.com → 23 finding(s)
@@ -306,15 +306,15 @@ docker run -v $(pwd)/results:/workspace kobra:latest \
 ```
 🐍 KOBRA v4.4.0
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Scan modules:    58 (+1 auth_aware)
-Payload modules: 1 (stack_payloads — new)
-Engine modules:  21
-Report formats:  13
-Tests:           286 (+9 since v4.2.0)
-Source LOC:      ~24,500
+Scan modules:    59 (+4 v4.4.0: cloudflare_ranges, ai_gateway, dns_pivot, auth_flow)
+Payload modules: 1 (stack_payloads)
+Engine modules:  19
+Report formats:  12
+Tests:           313 (+24 since v4.3.0)
+Source LOC:      ~25,500
 Binary size:     ~19MB
 CI:              ✓ passing (GitHub Actions)
-Releases:        19 (v1.0.0 → v4.4.0)
+Releases:        21 (v1.0.0 → v4.4.0)
 License:         MIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```

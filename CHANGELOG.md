@@ -8,6 +8,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [4.4.0] - 2026-07-29 — Sumopod Lessons
+
+### Added
+- **cloudflare_ranges.rs** — detects 14 Cloudflare IP ranges, downgrades subdomain takeover FPs (Lesson 1 — Sumopod api-gate-v2 false positive)
+- **ai_gateway.rs** — detects LiteLLM/vLLM/OpenAI-compatible gateways (Lesson 4 — Sumopod ai.sumopod.com)
+- **dns_pivot.rs** — groups subdomains by IP, probes direct-origin infrastructure (Lesson 3 + origin probe Lesson 5)
+- **auth_flow.rs** — classifies JWT/cookie/Basic/OAuth/API-key auth schemes (Lesson 2 — beyond Bearer tokens)
+
+### Fixed
+- **v4.4.0 hotfix** — ai_gateway base URL parsing + severity calibration
+
+### Stats
+- 91 modules total: 59 scan + 19 engine + 12 report (+4 from v4.3.0)
+- 313 tests passing (+24 from v4.3.0)
+- ~25,500 LOC
+
+## [4.3.0] - 2026-07-29 — Auth-aware + Stack payloads
+
+### Added
+- **auth_aware.rs** — probes 27 auth-protected paths when `--auth` configured (closes gap where flag was extracted but unused)
+- **stack_payloads.rs** — 4 framework-specific payload categories (magic-link, sqli, graphql, xss)
+  - Angular: `/api/v1/auth/magic` + `data:text/html`
+  - React: `data:text/html` payload
+  - PHP: UNION SELECT variants
+- **stack_fingerprint.rs integration** — `run_all()` calls fingerprint FIRST, logs `framework_hint` to stderr
+
+### Stats
+- 87 modules total (+2 from v4.2.0): 55 scan + 19 engine + 12 report
+- 286 tests passing (+19 from v4.2.0)
+
+## [4.2.0] - 2026-07-29 — SPA Fallback + Auto-triage
+
+### Added
+- **exposed_files.rs** — FNV-1a body hash vs `/` baseline; SPA fallback skip (eliminates ~10% FPs)
+- **research2026.rs** — Magic-link payload JSON-only trigger (skips HTML)
+- **multitenant.rs** — Cross-tenant probe skips HTML responses
+- **Stack Fingerprint** — detects SPA framework (Angular/React/Next.js/Vue/Nuxt/Svelte/Ember) + server + API style
+- **Auto-Triage** — runs automatically in crazy mode (no `--triage` flag); stealth/normal still opt-in
+
+### Fixed
+- **ai_triage.rs** — new FP patterns for SPA fallback (EXPOSED, AUTH, GRAPHQL, OAUTH, MULTITENANT)
+
+### Verified
+- Juice Shop benchmark: 3 magic-link FPs eliminated, security.txt downgraded Critical→Medium, `/metrics` correctly identified as real Prometheus exposure
+
+### Stats
+- 85 modules total (+2 from v4.1.0): 53 scan + 19 engine + 13 report
+- 267 tests passing (+43 from v4.1.0)
+
 ## [4.1.0] - 2026-07-29 — Extensions
 
 ### Added
@@ -134,3 +183,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [3.0.0]: https://github.com/shenyo1/kobra/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/shenyo1/kobra/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/shenyo1/kobra/releases/tag/v1.0.0
+[4.4.0]: https://github.com/shenyo1/kobra/compare/v4.3.0...v4.4.0
+[4.3.0]: https://github.com/shenyo1/kobra/compare/v4.2.0...v4.3.0
+[4.2.0]: https://github.com/shenyo1/kobra/compare/v4.1.1...v4.2.0
+[4.0.0]: https://github.com/shenyo1/kobra/compare/v3.3.2...v4.0.0
