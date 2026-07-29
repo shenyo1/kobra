@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-KOBRA v3.3.0 MCP server — exposes FULL KOBRA suite as MCP tools over stdio.
-Supports ALL v3.3.0 features + Supabase/PostgREST: nuclei compat, IDOR, tech fingerprint, SARIF,
+KOBRA v4.1.0 MCP server — exposes FULL KOBRA suite as MCP tools over stdio.
+Supports ALL v4.1.0 features + Supabase/PostgREST: nuclei compat, IDOR, tech fingerprint, SARIF,
 screenshots, passive proxy, wordlist fuzzing, diff scan, cross-target chain, watch mode.
 
 Setup:

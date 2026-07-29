@@ -19,7 +19,7 @@
 [![Rust](https://img.shields.io/badge/rust-1.82%2B-orange.svg)](https://www.rust-lang.org/)
 [![CI](https://img.shields.io/badge/CI-passing-brightgreen.svg)](https://github.com/shenyo1/kobra/actions)
 
-**53 scan modules** · **14 engines** · **10 report formats** · **194 tests** · **~19,500 LOC**
+**56 scan modules** · **20 engines** · **12 report formats** · **267 tests** · **~22,500 LOC**
 
 [Features](#-features) · [Quick Start](#-quick-start) · [Usage](#-usage) · [MCP](#-mcp-integration) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
@@ -41,7 +41,7 @@ Target → KOBRA → Findings (JSON/MD/HTML/SARIF)
 
 | Other scanners | KOBRA |
 |---|---|
-| ❌ Single vulnerability class per tool | ✅ **53 modules** in one binary |
+| ❌ Single vulnerability class per tool | ✅ **56 modules** in one binary |
 | ❌ Need multiple separate tools | ✅ Recon → Scan → Triage → Report |
 | ❌ Tons of false positives | ✅ **AI Triage** + statistical detection |
 | ❌ Manual report writing | ✅ Multi-format output (SARIF, HTML, MD, JSON) |
@@ -52,7 +52,7 @@ Target → KOBRA → Findings (JSON/MD/HTML/SARIF)
 
 ## ✨ Features
 
-### 🔍 Scan Modules (53)
+### 🔍 Scan Modules (56)
 - **Web**: XSS, SQLi, SSRF, SSTI, RCE, XXE, Command Injection
 - **API**: IDOR, Mass Assignment, GraphQL, OAuth, JWT, OpenAPI/Swagger
 - **Auth**: Magic-link ATO, Multi-tenant, Session, Cookie
@@ -258,11 +258,11 @@ docker run -v $(pwd)/results:/workspace kobra:latest \
 ```
 🐍 KOBRA v4.0.0
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Scan modules:    53
-Engine modules:  14
-Report formats:  10
+Scan modules:    56
+Engine modules:  20
+Report formats:  12
 Tests:           194 (0 failed, 0 warnings)
-Source LOC:      ~19,500
+Source LOC:      ~22,500
 Binary size:     ~19MB
 CI:              ✓ passing (GitHub Actions)
 Releases:        16+ (v1.0.0 → v4.0.0)
