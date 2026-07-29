@@ -14,3 +14,5 @@ pub mod cross_chain;
 pub mod watch;
 pub mod ai_triage;
 pub mod profiles;
+pub mod mutator_v2;
+pub mod exploit_verify;
