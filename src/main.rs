@@ -10,7 +10,7 @@ use kobra::types::{Mode, Severity};
 use std::sync::Arc;
 
 #[derive(Parser)]
-#[command(name = "kobra", version, about = "KOBRA v4.0 — OOB Engine + Smart Mutation + Exploit Verify")]
+#[command(name = "kobra", version, about = "KOBRA v4.1 — Historical Tracking + Dedup + Dashboard + Plugin Marketplace + i18n")]
 struct Cli {
     /// Target URL(s). Comma-separated for multiple.
     #[arg(short, long, value_delimiter = ',')]

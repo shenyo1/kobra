@@ -16,3 +16,6 @@ pub mod ai_triage;
 pub mod profiles;
 pub mod mutator_v2;
 pub mod exploit_verify;
+pub mod historical;
+pub mod dedup;
+pub mod plugin_v2;

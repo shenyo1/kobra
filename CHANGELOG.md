@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [4.1.0] - 2026-07-29 — Extensions
+
+### Added
+- **Historical Tracking** (`src/engine/historical.rs`) — scan history DB with fingerprint dedup + time-series + regression detection (5 tests)
+- **Smart Dedup** (`src/engine/dedup.rs`) — within-scan similarity grouping with severity preservation (9 tests)
+- **Dashboard v2** (`src/report/dashboard_v2.rs`) — interactive HTML with live search, filter, sort, chart, JSON/CSV export, fully offline (6 tests)
+- **Plugin Marketplace** (`src/engine/plugin_v2.rs`) — install/uninstall/load plugins in 4 categories × 4 pattern kinds (8 tests)
+- **Multi-language Reports** (`src/report/i18n.rs`) — English, Indonesian, Japanese, Chinese translations (9 tests)
+
+### Stats
+- 56 scan + 20 engine + 12 report = 88 modules (+8 from v4.0)
+- 267 tests passing (+35 from v4.0)
+- 17 releases (was 16)
+
+[4.1.0]: https://github.com/shenyo1/kobra/compare/v4.0.0...v4.1.0
+
 ## [4.0.0] - 2026-07-29 — Intelligence Layer
 
 ### Added
