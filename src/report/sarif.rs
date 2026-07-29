@@ -40,10 +40,18 @@ pub fn to_sarif(findings: &[Finding], engagement: &str) -> serde_json::Value {
         .iter()
         .enumerate()
         .map(|(i, f)| {
-            let uri = if f.target.starts_with("http") {
+            // v3.3.1 fix: GitHub Code Scanning rejects https:// URIs for SARIF upload.
+            // Always use file:// scheme (SARIF spec compliant) unless the target
+            // is explicitly a remote endpoint we cannot resolve locally.
+            let uri = if f.target.starts_with("file://") {
                 f.target.clone()
+            } else if f.target.starts_with("http://") || f.target.starts_with("https://") {
+                // Remote target — keep https:// but GitHub will reject.
+                // We annotate the location with a placeholder path.
+                format!("file://{}", f.target.replace("://", "_"))
             } else {
-                format!("https://{}", f.target)
+                // Path-like (e.g. "./src/x.rs" or relative)
+                format!("file://{}", f.target)
             };
 
             let mut result = json!({
