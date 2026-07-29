@@ -1,0 +1,56 @@
+{
+  "name": "kobra-plugin-chain-orchestrator",
+  "version": "1.0.0",
+  "author": "shenyo1",
+  "description": "Full kill chain: recon → vuln → exploit → persist → exfil. State machine with rollback.",
+  "category": "Exploit",
+  "engine_version": ">=4.4.0",
+  "patterns": [
+    {
+      "kind": "trigger",
+      "value": "chain.eligible_findings>=3",
+      "severity_hint": "Critical"
+    }
+  ],
+  "chain_stages": [
+    {
+      "stage": "recon",
+      "plugins": ["auth_flow", "dns_pivot", "cloudflare_ranges"],
+      "output": "recon_state.json"
+    },
+    {
+      "stage": "auth_bypass",
+      "plugins": ["jwt-attack", "auth_flow", "cors_deep"],
+      "preconditions": ["stage:recon.authenticated"],
+      "output": "auth_bypass_state.json"
+    },
+    {
+      "stage": "vuln_exploit",
+      "plugins": ["sqlmap-auto", "postgrest-pwn", "jinja2-ssti"],
+      "preconditions": ["stage:auth_bypass.token_acquired"],
+      "output": "vuln_exploit_state.json"
+    },
+    {
+      "stage": "persist",
+      "plugins": ["cf-bypass-shell", "scheduled-task", "plugin-injection"],
+      "preconditions": ["stage:vuln_exploit.shell_obtained"],
+      "output": "persist_state.json"
+    },
+    {
+      "stage": "exfil",
+      "plugins": ["chunker-exfil", "dns-tunnel", "image-stego"],
+      "preconditions": ["stage:persist.access_confirmed"],
+      "output": "exfil_state.json"
+    }
+  ],
+  "rollback": {
+    "enabled": true,
+    "snapshot_each_stage": true,
+    "max_rollback_depth": 5
+  },
+  "evidence": {
+    "screenshot_each_stage": true,
+    "log_all_requests": true,
+    "hash_chain": "sha256"
+  }
+}

