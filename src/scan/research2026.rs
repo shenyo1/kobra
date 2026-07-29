@@ -41,8 +41,16 @@ pub async fn scan(http: &HttpClient, target: &str, mode: Mode) -> Result<Vec<Fin
         for ep in ["/api/auth/sign-up", "/api/signup", "/auth/signup", "/api/auth/magic-link", "/api/magic-link"] {
             let u = format!("{}{}", base, ep);
             let body = r#"{"email":"victim@sumopod.com","callback":"https://evil.test/c"}"#;
-            if let Ok((st, _h, resp, _f)) = http.fetch(&u, reqwest::Method::POST, Some(body), Some(std::collections::HashMap::from([("Content-Type".into(), "application/json".into())]))).await {
+            if let Ok((st, h, resp, _f)) = http.fetch(&u, reqwest::Method::POST, Some(body), Some(std::collections::HashMap::from([("Content-Type".into(), "application/json".into())]))).await {
                 let rl = resp.to_lowercase();
+                let hl = h.to_lowercase();
+                // Fix v4.2.0: negative-control — skip HTML responses (SPA fallback).
+                // Juice Shop returns JS-bundle HTML with "magic" + "link" tokens in error pages.
+                let is_html = rl.contains("<html") || rl.contains("<!doctype");
+                let is_json = hl.contains("content-type: application/json");
+                if is_html && !is_json {
+                    continue;
+                }
                 // Indicators the link/token is returned in-body (pre-account hijack)
                 if (rl.contains("magic") && (rl.contains("token") || rl.contains("link") || rl.contains("url")))
                    || rl.contains("verification") && rl.contains("token")
@@ -64,8 +72,13 @@ pub async fn scan(http: &HttpClient, target: &str, mode: Mode) -> Result<Vec<Fin
         let gql_url = format!("{}/graphql", base);
         // Send a batch of alias queries; if server accepts array -> batching abuse possible
         let batch = r#"[{"query":"{__typename}","operationName":"a0"},{"query":"{__typename}","operationName":"a1"},{"query":"{__typename}","operationName":"a2"}]"#;
-        if let Ok((st, _h, resp, _f)) = http.fetch(&gql_url, reqwest::Method::POST, Some(batch), Some(std::collections::HashMap::from([("Content-Type".into(), "application/json".into())]))).await {
-            if st == 200 && (resp.contains("__typename") || resp.contains("data")) {
+        if let Ok((st, h, resp, _f)) = http.fetch(&gql_url, reqwest::Method::POST, Some(batch), Some(std::collections::HashMap::from([("Content-Type".into(), "application/json".into())]))).await {
+            let hl = h.to_lowercase();
+            let rl = resp.to_lowercase();
+            // Fix v4.2.0: negative-control — must be JSON response with valid GraphQL shape.
+            let is_html = rl.contains("<html") || rl.contains("<!doctype");
+            let is_json = hl.contains("content-type: application/json");
+            if !(is_html && !is_json) && st == 200 && (rl.contains("__typename") || rl.contains("data")) {
                 out.push(
                     Finding::new(Severity::Medium, "GRAPHQL", "GraphQL batching accepted (rate-limit bypass vector)", target)
                         .with_evidence("server accepted JSON array of queries (batch abuse possible)")

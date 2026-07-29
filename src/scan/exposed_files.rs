@@ -50,23 +50,39 @@ const SENSITIVE_PATHS: &[&str] = &[
 ];
 
 /// Body signatures that confirm the path is the actual file (not 404 page).
+/// IMPORTANT: Each signature must be DISTINCTIVE — must only match its target file,
+/// NOT generic URLs that happen to contain the string.
+/// Fix v4.2.0: removed "localhost" (too broad — matched Juice Shop security.txt CSAF URL).
+/// Fix v4.2.0: removed "database" (too broad — matches any DB doc).
+/// Fix v4.2.0: narrowed "secret_key" to "secret_key=" (avoid random HTML).
 const BODY_SIGNATURES: &[(&str, &str)] = &[
     ("DB_PASSWORD=", ".env"),
     ("APP_KEY=base64:", "Laravel .env"),
+    ("APP_DEBUG=true", ".env"),
     ("[core]", ".git/config"),
+    ("repositoryformatversion", ".git/config"),
     ("ref: refs/", ".git/HEAD"),
+    ("ref: refs/heads/", ".git/HEAD"),
     ("-----BEGIN", "private key"),
+    ("-----BEGIN RSA", "RSA private key"),
+    ("-----BEGIN OPENSSH", "SSH private key"),
+    ("-----BEGIN PRIVATE", "private key"),
     ("AKIA", "AWS key"),
+    ("ASIA", "AWS temporary key"),
     ("postgres://", "DB connection string"),
     ("mysql://", "DB connection string"),
     ("mongodb://", "DB connection string"),
-    ("localhost", "config db"),
-    ("production", "production env"),
-    ("database", "DB config"),
+    ("/etc/passwd", "passwd leak"),
     ("root:x:0:0", "/etc/passwd leak"),
-    ("<?xml", "config.xml"),
-    ("secret_key", "secret"),
+    ("<?xml version=", "config.xml"),
+    ("<configuration>", "config.xml"),
     ("client_secret", "OAuth secret"),
+    ("api_key=", "API key"),
+    ("apiKey=", "API key"),
+    ("secret_key=", "secret"),
+    ("SECRET_KEY=", "secret"),
+    ("# HELP", "Prometheus metrics"),
+    ("# TYPE", "Prometheus metrics"),
 ];
 
 pub fn matches_signature(body: &str) -> Option<&'static str> {
@@ -87,10 +103,23 @@ pub async fn scan(http: &HttpClient, target: &str, mode: Mode) -> Vec<Finding> {
         Mode::Normal => 100,
         Mode::Crazy => SENSITIVE_PATHS.len(),
     };
+    // Negative-control baseline: fetch / once and check if all "exposed" paths
+    // return the same body (SPA fallback). Fix v4.2.0 — prevents 9903-byte SPA
+    // HTML false positives.
+    let baseline_hash = match http.get(&base).await {
+        Ok((_, _, body, _)) => Some(hash_body(&body)),
+        Err(_) => None,
+    };
     for path in SENSITIVE_PATHS.iter().take(limit) {
         let url = format!("{}{}", base, path);
         if let Ok((st, _h, body, _f)) = http.get(&url).await {
             if st == 200 && body.len() > 10 && !body.to_lowercase().contains("<html") {
+                // Negative-control: if body matches baseline, it's SPA fallback
+                if let Some(bh) = baseline_hash {
+                    if hash_body(&body) == bh {
+                        continue; // SPA fallback — skip
+                    }
+                }
                 let sig = matches_signature(&body);
                 let sev = match sig {
                     Some(_) => Severity::Critical,
@@ -130,6 +159,17 @@ fn normalize_base(url: &str) -> String {
     }
 }
 
+/// Fast body hash for negative-control comparison (FNV-1a 64-bit).
+/// Same body bytes → same hash → SPA fallback.
+fn hash_body(body: &str) -> u64 {
+    let mut hash: u64 = 0xcbf29ce484222325;
+    for b in body.bytes() {
+        hash ^= b as u64;
+        hash = hash.wrapping_mul(0x100000001b3);
+    }
+    hash
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -151,5 +191,33 @@ mod tests {
     #[test]
     fn path_count_min() {
         assert!(SENSITIVE_PATHS.len() >= 50);
+    }
+
+    #[test]
+    fn hash_body_identical() {
+        let h1 = hash_body("hello world");
+        let h2 = hash_body("hello world");
+        assert_eq!(h1, h2);
+    }
+
+    #[test]
+    fn hash_body_different() {
+        let h1 = hash_body("hello");
+        let h2 = hash_body("world");
+        assert_ne!(h1, h2);
+    }
+
+    #[test]
+    fn sig_no_localhost() {
+        // Remove localhost signature — too broad, matches any URL containing it.
+        let body = "CSAF: http://localhost:3000/.well-known/csaf";
+        assert!(matches_signature(body).is_none(),
+            "localhost signature was removed in v4.2.0 — but body still matches");
+    }
+
+    #[test]
+    fn sig_prometheus() {
+        let body = "# HELP foo bar\n# TYPE foo counter\nfoo 1\n";
+        assert!(matches_signature(body).is_some());
     }
 }

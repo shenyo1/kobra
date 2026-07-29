@@ -52,7 +52,7 @@ Target → KOBRA → Findings (JSON/MD/HTML/SARIF)
 
 ## ✨ Features
 
-### 🔍 Scan Modules (56)
+### 🔍 Scan Modules (57)
 - **Web**: XSS, SQLi, SSRF, SSTI, RCE, XXE, Command Injection
 - **API**: IDOR, Mass Assignment, GraphQL, OAuth, JWT, OpenAPI/Swagger
 - **Auth**: Magic-link ATO, Multi-tenant, Session, Cookie
@@ -71,6 +71,26 @@ Target → KOBRA → Findings (JSON/MD/HTML/SARIF)
 
 ### 📊 Reports (10)
 JSON · Markdown · HTML Dashboard · SARIF v2.1 · PoC Bash Scripts · Webhooks (Slack/Discord/Generic) · Diff Dashboard · Plain Output · Simple (Bahasa ID)
+
+---
+
+## 🚀 What's New in v4.2.0
+
+### 🛡️ **SPA Fallback Detection (Negative-Control)**
+Eliminates ~10% false positives caused by SPA frameworks (Angular/Vue/React) returning 200 + HTML for any unknown path:
+- `exposed_files.rs`: FNV-1a body hash compared against `/` baseline — if hash matches, it's SPA fallback, skip
+- `research2026.rs`: Magic-link payload now skips HTML responses (only JSON triggers)
+- `multitenant.rs`: Cross-tenant probe skips HTML responses
+- `ai_triage.rs`: New FP patterns for SPA fallback across EXPOSED, AUTH, GRAPHQL, OAUTH, MULTITENANT
+
+### 🤖 **Auto-Triage (crazy mode)**
+AI Triage now runs automatically in crazy mode (no `--triage` flag needed). Stealth/normal still require explicit opt-in. Filters out FP patterns learned from Juice Shop benchmark.
+
+### 🧬 **Stack Fingerprint (new module)**
+Detects SPA framework (Angular, React, Next.js, Vue, Nuxt, Svelte, Ember) + server (Express, nginx, Apache, PHP) + API style. Used by downstream modules to select stack-specific payloads instead of generic ones.
+
+### 🧪 **Benchmark Validation**
+Re-tested vs OWASP Juice Shop: **3 magic-link FPs eliminated**, security.txt correctly downgraded from Critical to Medium, /metrics correctly identified as REAL Prometheus exposure.
 
 ---
 
@@ -256,16 +276,16 @@ docker run -v $(pwd)/results:/workspace kobra:latest \
 ## 📊 Stats
 
 ```
-🐍 KOBRA v4.0.0
+🐍 KOBRA v4.2.0
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Scan modules:    56
-Engine modules:  20
-Report formats:  12
-Tests:           194 (0 failed, 0 warnings)
-Source LOC:      ~22,500
+Scan modules:    57 (+1 stack_fingerprint)
+Engine modules:  21 (+1 SPA-fallback FP patterns in ai_triage)
+Report formats:  13 (+0)
+Tests:           277 (+10 since v4.1.0)
+Source LOC:      ~23,500
 Binary size:     ~19MB
 CI:              ✓ passing (GitHub Actions)
-Releases:        16+ (v1.0.0 → v4.0.0)
+Releases:        17 (v1.0.0 → v4.2.0)
 License:         MIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```

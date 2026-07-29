@@ -50,6 +50,7 @@ pub mod headless;      // Headless browser — DOM XSS, SPA crawl, JS execution
 pub mod crawler;       // Basic crawler — JS endpoints, sitemap, robots, links
 pub mod waf_learn;     // WAF Learning Mode — detect + bypass suggestions
 pub mod tech_fingerprint; // Tech fingerprinting — detect frameworks/CMS/servers
+pub mod stack_fingerprint; // v4.2.0: Stack fingerprint — SPA/server/API style (fixes generic-payload FP)
 pub mod idor;          // Multi-session IDOR testing — compare two auth sessions
 pub mod fuzz;          // Wordlist fuzzing — ffuf-style path + param fuzzing
 pub mod passive;       // Passive proxy mode — analyze traffic without active probes

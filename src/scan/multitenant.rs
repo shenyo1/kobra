@@ -23,6 +23,14 @@ pub async fn scan(http: &HttpClient, target: &str, _mode: Mode) -> Result<Vec<Fi
 
         if let Ok((_s1, _h1, b1, _f1)) = http.get(&base_url).await {
             if let Ok((s2, _h2, b2, _f2)) = http.get(&victim_url).await {
+                // Fix v4.2.0: skip if both responses look like SPA fallback HTML.
+                let b1l = b1.to_lowercase();
+                let b2l = b2.to_lowercase();
+                let is_html_1 = b1l.contains("<html") || b1l.contains("<!doctype");
+                let is_html_2 = b2l.contains("<html") || b2l.contains("<!doctype");
+                if is_html_1 && is_html_2 && b1 == b2 {
+                    continue; // SPA fallback — skip
+                }
                 // If status ok for victim and body differs significantly AND contains
                 // data-looking content, flag potential isolation break.
                 if s2 == 200 && b2 != b1 && b2.len() > 20 {

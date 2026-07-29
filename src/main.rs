@@ -580,9 +580,17 @@ async fn main() -> anyhow::Result<()> {
     }
 
     // AI Triage — auto-validate findings, filter FP, suggest fixes
-    if cli.triage {
+    // Fix v4.2.0: auto-on for crazy mode (no user flag needed).
+    // Stealth/normal still require --triage explicit opt-in.
+    let auto_triage = cli.triage || cli.mode == ModeArg::Crazy;
+    if auto_triage {
         let triage_results = kobra::engine::ai_triage::triage_findings(&all);
-        kobra::engine::ai_triage::print_triage(&triage_results);
+        if cli.triage {
+            kobra::engine::ai_triage::print_triage(&triage_results);
+        } else {
+            // Silent for auto-triage — just filter FPs
+            println!("[*] Auto-triage (crazy mode): filtering false positives");
+        }
         // Filter out false positives from final output
         let fp_titles: std::collections::HashSet<String> = triage_results.iter()
             .filter(|r| r.verdict == kobra::engine::ai_triage::Verdict::FalsePositive)

@@ -52,6 +52,13 @@ const FP_PATTERNS: &[(&str, &str, &str)] = &[
     ("TECH", "common_header", "Standard server header — informational only"),
     ("FUZZ", "generic_404", "Server returns 200 for all paths with generic 404 body"),
     ("CORS", "no_credentials", "Wildcard CORS without credentials — low impact"),
+    // Fix v4.2.0: SPA fallback false positives (learned from Juice Shop benchmark).
+    // When response body matches baseline /, it's Angular/Vue/React SPA serving index.html for all paths.
+    ("EXPOSED", "spa_fallback", "Response body identical to baseline / — Angular/Vue SPA fallback, not exposed file"),
+    ("AUTH", "spa_fallback", "Magic-link payload detected in HTML error page (SPA JS bundle contains code paths) — not actual leak"),
+    ("GRAPHQL", "spa_fallback", "GraphQL probe hit SPA fallback HTML — server doesn't actually accept GraphQL"),
+    ("OAUTH", "spa_fallback", "OAuth patterns detected in SPA bundle HTML — not actual OAuth exposure"),
+    ("MULTITENANT", "spa_fallback", "Tenant path returned SPA fallback HTML — no real tenant model"),
 ];
 
 /// CWE mapping for common categories
@@ -362,5 +369,30 @@ mod tests {
         assert_eq!(results.len(), 3);
         assert_eq!(results[0].verdict, Verdict::TruePositive);
         assert_eq!(results[1].verdict, Verdict::FalsePositive);
+    }
+
+    // Fix v4.2.0: SPA fallback FP tests (learned from Juice Shop benchmark)
+    #[test]
+    fn detect_fp_exposed_spa_fallback() {
+        let f = Finding::new(Severity::Critical, "EXPOSED", "Exposed file /.env", "http://localhost:3000/.env")
+            .with_evidence("status=200 len=9903 sig=spa_fallback body_hash_matches_baseline");
+        let r = triage_single(&f);
+        assert_eq!(r.verdict, Verdict::FalsePositive);
+    }
+
+    #[test]
+    fn detect_fp_auth_magic_link_spa() {
+        let f = Finding::new(Severity::High, "AUTH", "Magic-link GHSA-qq9h", "http://localhost:3000/api/auth/magic-link")
+            .with_evidence("status=500 response leaks magic-link/token in body spa_fallback");
+        let r = triage_single(&f);
+        assert_eq!(r.verdict, Verdict::FalsePositive);
+    }
+
+    #[test]
+    fn detect_fp_graphql_spa() {
+        let f = Finding::new(Severity::Medium, "GRAPHQL", "GraphQL batching accepted", "http://localhost:3000/graphql")
+            .with_evidence("server accepted JSON array spa_fallback");
+        let r = triage_single(&f);
+        assert_eq!(r.verdict, Verdict::FalsePositive);
     }
 }
