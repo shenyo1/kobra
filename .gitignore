@@ -31,3 +31,6 @@ mnemosyne_backup_*.json
 
 # Hermes skills (they belong in profile, not repo)
 skills/
+
+# Attack plugins are intentional content (not test outputs)
+!plugins-attack/*.json
