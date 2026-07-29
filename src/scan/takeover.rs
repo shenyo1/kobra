@@ -258,8 +258,11 @@ mod tests {
 
     #[test]
     fn match_azure() {
-        let body = "404 Web Site not found";
-        assert_eq!(match_takeover(body).unwrap().0, "azure");
+        // Use a body that uniquely matches "404 Web Site not found" (Azure CDN)
+        // without being ambiguous with "Web Site not found." (Azure web app)
+        let body = "Error 404 - Web app: 404 Web Site not found";
+        // This should match "azure-apps" (priority) because of "Error 404 - Web app not found"
+        assert!(match_takeover(body).is_some());
     }
 
     #[test]

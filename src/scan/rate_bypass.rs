@@ -155,18 +155,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn techniques_non_empty() {
-        assert!(!techniques().is_empty());
-    }
-
-    #[test]
-    fn method_switch_test() {
-        // Test that method switching logic works
-        let alt = ["POST", "PUT", "DELETE"];
-        assert_eq!(alt.len(), 3);
-    }
-
-    #[test]
     fn bypass_result_struct() {
         let r = BypassResult {
             technique: "test",
@@ -177,12 +165,17 @@ mod tests {
         assert_eq!(r.technique, "test");
         assert!(r.success);
     }
-}
 
-fn techniques() -> Vec<(&'static str, Vec<(&'static str, &'static str)>)> {
-    vec![
-        ("X-Forwarded-For spoof", vec![("X-Forwarded-For", "127.0.0.1")]),
-        ("X-Real-IP spoof", vec![("X-Real-IP", "127.0.0.1")]),
-        ("CF-Connecting-IP spoof", vec![("CF-Connecting-IP", "127.0.0.1")]),
-    ]
+    #[test]
+    fn method_switch_constants() {
+        let alt = ["POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"];
+        assert_eq!(alt.len(), 6);
+        assert!(alt.contains(&"POST"));
+    }
+
+    #[test]
+    fn path_variants_non_empty() {
+        let variants = ["/.", "//", "/..;/", "%00", "?%", "/./"];
+        assert_eq!(variants.len(), 6);
+    }
 }
