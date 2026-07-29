@@ -9,6 +9,11 @@ on:
     - cron: '0 2 * * *'  # Daily at 2 AM UTC
   workflow_dispatch:      # Manual trigger
 
+# Required permissions for CodeQL SARIF upload
+permissions:
+  contents: read
+  security-events: write  # Required for upload-sarif action (was 'read' in v1.x, now needs write)
+
 jobs:
   kobra-scan:
     name: KOBRA Security Scan
@@ -21,7 +26,7 @@ jobs:
 
       - name: Install KOBRA
         run: |
-          curl -L https://github.com/shenyo1/kobra/releases/download/v3.3.0/kobra \
+          curl -L https://github.com/shenyo1/kobra/releases/download/v3.3.1/kobra \
             -o /usr/local/bin/kobra
           chmod +x /usr/local/bin/kobra
           kobra --version
@@ -29,7 +34,10 @@ jobs:
       - name: Run KOBRA Scan
         run: |
           mkdir -p kobra-results
-          kobra -t "${{ secrets.TARGET_URL || 'https://example.com' }}" \
+          # Default to a safe target (example.com) if secret not set
+          TARGET="${{ secrets.TARGET_URL || 'https://example.com' }}"
+          # If example.com, use --no-confirm to skip interactive prompt
+          kobra -t "${TARGET}" \
             -m crazy \
             --no-confirm \
             --triage \
@@ -39,8 +47,9 @@ jobs:
             -o kobra-results/results.json || echo "Scan complete (some errors may be expected)"
 
       - name: Upload SARIF to GitHub Security
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('kobra-results/kobra.sarif') != ''
+        # Use v4 (v3 deprecated December 2026)
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: kobra-results/kobra.sarif
           category: kobra
@@ -59,12 +68,20 @@ jobs:
           if [ -f kobra-results/results.json ]; then
             HIGH=$(python3 -c "
               import json
-              data = json.load(open('kobra-results/results.json'))
-              high = sum(1 for f in data if f.get('severity') in ['High', 'Critical'])
-              print(high)
+              try:
+                with open('kobra-results/results.json') as f:
+                  data = json.load(f)
+                if isinstance(data, dict):
+                  data = data.get('findings', [])
+                high = sum(1 for f in data if f.get('severity') in ['High', 'Critical'])
+                print(high)
+              except Exception as e:
+                print(0)
             " 2>/dev/null || echo "0")
-            echo "✅ KOBRA found $HIGH High/Critical findings"
+            echo "::notice::✅ KOBRA found $HIGH High/Critical findings"
             if [ "$HIGH" -gt "0" ]; then
               echo "::warning::$HIGH High/Critical findings detected!"
             fi
+          else
+            echo "::notice::No results.json produced (scan may have failed)"
           fi
