@@ -152,6 +152,10 @@ struct Cli {
     /// AI Triage: auto-validate findings, filter FP, suggest fixes.
     #[arg(long)]
     triage: bool,
+
+    /// List all available scan profiles.
+    #[arg(long)]
+    profile_list: bool,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
@@ -178,6 +182,29 @@ async fn main() -> anyhow::Result<()> {
         eprintln!("[-] No target. Use -t https://site.com");
         std::process::exit(1);
     }
+    // Load profile if specified
+    if let Some(profile_name) = &cli.profile {
+        let profile = kobra::engine::profiles::load_profile(profile_name);
+        match profile {
+            Some(p) => {
+                println!("[*] using profile: {} (mode={:?})", p.name, p.mode);
+                // Override cli values with profile
+                // (mode itself is handled via cli.mode, but we can extend later)
+            }
+            None => {
+                eprintln!("[-] profile '{}' not found. Use --profile-list to see available.", profile_name);
+                eprintln!("    Built-in: bb, pentest, quick, ci");
+                eprintln!("    Custom: ~/.config/kobra/profiles/<name>.json");
+                std::process::exit(1);
+            }
+        }
+    }
+
+    if cli.profile_list {
+        kobra::engine::profiles::list_profiles();
+        std::process::exit(0);
+    }
+
     let mode: Mode = cli.mode.into();
 
     // --safe confirmation

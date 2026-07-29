@@ -13,3 +13,4 @@ pub mod diff;
 pub mod cross_chain;
 pub mod watch;
 pub mod ai_triage;
+pub mod profiles;
