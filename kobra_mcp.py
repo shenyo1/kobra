@@ -103,6 +103,8 @@ def _build_scan_cmd(args):
         cmd += " -R"
     if args.get("simple"):
         cmd += " --simple"
+    if args.get("triage"):
+        cmd += " --triage"
 
     return cmd
 
@@ -145,6 +147,7 @@ async def list_tools():
                     "concurrency": {"type": "integer", "description": "Concurrency level"},
                     "recon": {"type": "boolean", "description": "Run recon first"},
                     "simple": {"type": "boolean", "description": "Bahasa Indonesia simple output"},
+                    "triage": {"type": "boolean", "description": "AI Triage: auto-validate FP, suggest fixes"},
                 },
                 "required": ["target"],
             },

@@ -5,7 +5,7 @@ Glue between web-hacking-pro (brain) and available engines (KOBRA + nuclei + ffu
 
 Pipeline (all authorized targets only):
   1. Recon        -> crt.sh subdomains (via KOBRA recon) + httpx probe
-  2. KOBRA crazy -> 48 vuln modules, full disclosure
+  2. KOBRA crazy -> 51 vuln modules, full disclosure
   3. Nuclei       -> template CVE/tech detection
   4. FFUF         -> path/param fuzzing
   5. DalFox       -> XSS deep scan

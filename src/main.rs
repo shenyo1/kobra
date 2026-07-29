@@ -10,7 +10,7 @@ use kobra::types::{Mode, Severity};
 use std::sync::Arc;
 
 #[derive(Parser)]
-#[command(name = "kobra", version, about = "KOBRA v2.0 — diff scan + cross-target chain + watch mode")]
+#[command(name = "kobra", version, about = "KOBRA v3.0 — AI triage + JS deep analysis + API schema fuzzing")]
 struct Cli {
     /// Target URL(s). Comma-separated for multiple.
     #[arg(short, long, value_delimiter = ',')]
@@ -148,6 +148,10 @@ struct Cli {
     /// Watch mode: only alert on High+ findings.
     #[arg(long)]
     watch_high_only: bool,
+
+    /// AI Triage: auto-validate findings, filter FP, suggest fixes.
+    #[arg(long)]
+    triage: bool,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
@@ -267,7 +271,7 @@ async fn main() -> anyhow::Result<()> {
   ██  ██      ██   █ █▄▄█ █▀▀▌
   ██  ██      ▀████▀ █  █ █  █
   ▀█   ▀        ▀        █  █
-        KOBRA v2.0 — all-in-one BB scanner (OVERPOWERED)\x1b[0m"
+        KOBRA v3.0 — all-in-one BB scanner (OVERPOWERED)\x1b[0m"
     );
     println!("[*] mode={:?} concurrency={} timeout={}s", mode, conc, cli.timeout);
 
@@ -541,6 +545,21 @@ async fn main() -> anyhow::Result<()> {
             // Add diff markers to findings
             let diff_findings = kobra::engine::diff::diff_to_findings(&diff_result);
             all.extend(diff_findings);
+        }
+    }
+
+    // AI Triage — auto-validate findings, filter FP, suggest fixes
+    if cli.triage {
+        let triage_results = kobra::engine::ai_triage::triage_findings(&all);
+        kobra::engine::ai_triage::print_triage(&triage_results);
+        // Filter out false positives from final output
+        let fp_titles: std::collections::HashSet<String> = triage_results.iter()
+            .filter(|r| r.verdict == kobra::engine::ai_triage::Verdict::FalsePositive)
+            .map(|r| r.finding_title.clone())
+            .collect();
+        if !fp_titles.is_empty() {
+            println!("[*] Filtered {} false positive(s) from output", fp_titles.len());
+            all.retain(|f| !fp_titles.contains(&f.title));
         }
     }
 
