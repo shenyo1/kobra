@@ -12,7 +12,7 @@
 # 1. Copy binary KOBRA
 scp user@server-utama:~/.local/bin/kobra ~/.local/bin/
 # atau download dari release: 
-# curl -L https://github.com/shenyo1/kobra/releases/download/v3.2.0/kobra -o ~/.local/bin/kobra
+# curl -L https://github.com/shenyo1/kobra/releases/download/v3.3.0/kobra -o ~/.local/bin/kobra
 chmod +x ~/.local/bin/kobra
 
 # 2. Copy MCP server
@@ -128,7 +128,7 @@ Setelah setup, **mulai session baru** lalu:
 Kalau mau **persis sama** kayak setup Sakura-chan:
 
 ```
-~/.local/bin/kobra                    → Binary KOBRA v3.2.0
+~/.local/bin/kobra                    → Binary KOBRA v3.3.0
 ~/.local/opt/kobra/kobra_mcp.py       → MCP server
 ~/.local/opt/kobra/kobra_orchestrator.py  → Orchestrator (opsional)
 ~/.local/opt/kobra/*.py               → Helper scripts

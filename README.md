@@ -99,7 +99,7 @@ KOBRA memeriksa banyak jenis celah, di antaranya:
 - WAF bypass (lewati pembatas)
 - Multi-tenant (bocor data pengguna lain)
 - **Email-only Login Mass ATO** (endpoint `/login` yang kasih token tanpa password/OTP)
-- Dan 36 jenis lainnya (total 52 modul scan + 14 engine + 10 report)
+- Dan 36 jenis lainnya (total 53 modul scan + 14 engine + 10 report)
 
 Semua hasil ditampilkan jujur (tidak disembunyikan).
 

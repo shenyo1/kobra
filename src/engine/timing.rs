@@ -61,6 +61,35 @@ pub fn is_delayed(baseline: &[Duration], response: &[Duration], threshold_ms: u6
     rm > cutoff
 }
 
+/// Statistical time-based detection (anti-FP v3.3.0)
+/// Returns true ONLY if:
+///   (1) probe p90 > 2x baseline p90 (relative delay)
+///   AND
+///   (2) probe p90 > 2 seconds absolute (real SQLi, not network jitter)
+pub fn is_delayed_strong(baseline: &[Duration], response: &[Duration]) -> bool {
+    if baseline.is_empty() || response.is_empty() {
+        return false;
+    }
+    let p90_baseline = percentile(baseline, 0.90);
+    let p90_response = percentile(response, 0.90);
+
+    let ratio = p90_response.as_secs_f64() / p90_baseline.as_secs_f64().max(0.001);
+    let abs_delay_ok = p90_response >= Duration::from_millis(2000);
+    let rel_delay_ok = ratio >= 2.0;
+
+    rel_delay_ok && abs_delay_ok
+}
+
+fn percentile(samples: &[Duration], p: f64) -> Duration {
+    if samples.is_empty() {
+        return Duration::from_millis(0);
+    }
+    let mut sorted: Vec<Duration> = samples.to_vec();
+    sorted.sort();
+    let idx = ((p * (sorted.len() as f64 - 1.0)).round() as usize).min(sorted.len() - 1);
+    sorted[idx]
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

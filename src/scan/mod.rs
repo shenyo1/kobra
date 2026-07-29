@@ -56,6 +56,7 @@ pub mod passive;       // Passive proxy mode — analyze traffic without active 
 pub mod js_deep;       // JS Deep Analysis — webpack/vite bundle parse, hidden routes
 pub mod api_schema_fuzz; // API Schema Fuzzing — OpenAPI auto-generate test cases
 pub mod rate_bypass;    // Rate limit bypass engine — IP/method/path/encoding tricks
+pub mod postgrest;    // PostgREST / Supabase table disclosure scanner
 
 /// Run all enabled modules against a single URL with a set of parameters.
 /// `oob_host` enables blind-SSRF callback testing (your listener/collaborator).

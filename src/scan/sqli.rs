@@ -51,9 +51,11 @@ pub async fn scan(http: &HttpClient, target: &str, params: &[String], mode: Mode
     }
 
     // Time-based blind SQLi (hanya di crazy mode — karena butuh waktu)
+    // v3.3.0 FIX: 10 samples + statistical delay check (anti-FP from network jitter)
     if mode == Mode::Crazy {
         let sleep_secs = 3;
-        let baseline_samples = 3;
+        let baseline_samples = 10;  // was 3 — too sensitive to network jitter
+        let probe_samples = 5;
         let payloads = timing::sql_sleep_payloads(sleep_secs);
 
         // Baseline timing
@@ -70,20 +72,21 @@ pub async fn scan(http: &HttpClient, target: &str, params: &[String], mode: Mode
             for pl in &payloads {
                 let u = inject(&base, p, pl);
                 let mut probe_times = Vec::new();
-                for _ in 0..2 {
+                for _ in 0..probe_samples {
                     let start = Instant::now();
                     if let Ok(_) = http.get(&u).await {
                         probe_times.push(start.elapsed());
                     }
                 }
                 if !baseline_times.is_empty() && !probe_times.is_empty() {
-                    if timing::is_delayed(&baseline_times, &probe_times, 500) {
+                    // Anti-FP: require (1) probe p90 > 2x baseline p90, AND (2) absolute delay > 2s
+                    if timing::is_delayed_strong(&baseline_times, &probe_times) {
                         out.push(
                             Finding::new(Severity::High, "SQLi", "Time-based blind SQL injection detected", target)
                                 .with_param(p)
                                 .with_payload(pl)
                                 .with_evidence(&format!("baseline={:?} probe={:?}", baseline_times, probe_times))
-                                .with_confidence(75),
+                                .with_confidence(85),
                         );
                     }
                 }

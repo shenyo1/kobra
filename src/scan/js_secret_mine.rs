@@ -18,6 +18,8 @@ const SECRET_PATTERNS: &[(&str, &str)] = &[
     (r#"AIza[0-9A-Za-z\-_]{35}"#, "Google API Key"),
     (r#"sk_live_[0-9a-zA-Z]{24,}"#, "Stripe live secret key"),
     (r#"sk_test_[0-9a-zA-Z]{24,}"#, "Stripe test secret key"),
+    // Supabase JWT (anon is designed-public but should be tracked; service_role is critical)
+    (r#"eyJhbGciOi[A-Za-z0-9_-]{20,}\.eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}"#, "Supabase JWT in JS"),
     (r#"ghp_[0-9a-zA-Z]{36}"#, "GitHub personal access token"),
     (r#"-----BEGIN (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----"#, "Private key embedded"),
     (r#"firebaseConfig\s*=\s*\{[^}]+apiKey['"]?\s*:\s*['"]([A-Za-z0-9\-_]{20,})['"]"#, "Firebase API key"),
