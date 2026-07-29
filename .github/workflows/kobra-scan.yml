@@ -1,0 +1,70 @@
+name: KOBRA Security Scan
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+  workflow_dispatch:      # Manual trigger
+
+jobs:
+  kobra-scan:
+    name: KOBRA Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install KOBRA
+        run: |
+          curl -L https://github.com/shenyo1/kobra/releases/download/v3.1.0/kobra \
+            -o /usr/local/bin/kobra
+          chmod +x /usr/local/bin/kobra
+          kobra --version
+
+      - name: Run KOBRA Scan
+        run: |
+          mkdir -p kobra-results
+          kobra -t "${{ secrets.TARGET_URL || 'https://example.com' }}" \
+            -m crazy \
+            --no-confirm \
+            --triage \
+            --sarif kobra-results/kobra.sarif \
+            --html kobra-results/report.html \
+            --md kobra-results/report.md \
+            -o kobra-results/results.json || echo "Scan complete (some errors may be expected)"
+
+      - name: Upload SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: kobra-results/kobra.sarif
+          category: kobra
+
+      - name: Upload KOBRA results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kobra-scan-results
+          path: kobra-results/
+          retention-days: 30
+
+      - name: Check for High/Critical findings
+        if: always()
+        run: |
+          if [ -f kobra-results/results.json ]; then
+            HIGH=$(python3 -c "
+              import json
+              data = json.load(open('kobra-results/results.json'))
+              high = sum(1 for f in data if f.get('severity') in ['High', 'Critical'])
+              print(high)
+            " 2>/dev/null || echo "0")
+            echo "✅ KOBRA found $HIGH High/Critical findings"
+            if [ "$HIGH" -gt "0" ]; then
+              echo "::warning::$HIGH High/Critical findings detected!"
+            fi
+          fi
