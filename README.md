@@ -1,140 +1,328 @@
-# KOBRA — Pemindai Kerentanan Web untuk Semua
+<div align="center">
 
-KOBRA adalah alat bantu untuk mencari celah keamanan pada situs web (bug bounty).
-Alat ini bisa dipakai oleh pemula maupun ahli.
-
----
-
-## ⚠️ ATURAN PENTING (BACA DULU)
-
-Gunakan KOBRA **HANYA** di situs yang memberi Anda izin, misalnya:
-- Program bug bounty resmi (contoh: Sumopod, HackerOne, Bugcrowd)
-- Lab latihan (contoh: OWASP Juice Shop, PortSwigger Web Security Academy)
-
-**JANGAN** pakai ke situs orang lain tanpa izin. Itu melanggar hukum.
-
----
-
-## Cara Pakai (Paling Gampang)
-
-Buka terminal, lalu ketik:
-
-```bash
-# Lihat bantuan
-./kobra-cli.sh bantuan
-
-# Pindai 1 situs (mode agresif)
-./kobra-cli.sh scan https://contoh.com
-
-# Pindai pelan (susah ketahuan)
-./kobra-cli.sh scan aman https://contoh.com
-
-# Pindai semua subdomain perusahaan
-./kobra-cli.sh borong perusahaan.com
-
-# Cek cepat 1 halaman
-./kobra-cli.sh cek https://api.contoh.com
-
-# Lihat hasil
-./kobra-cli.sh hasil
+```
+   ▄█  █▄▄▄▄ ▄███▄   ██   █▄▄▄▄
+  ██  ██▀▀▀▀ ██   █  █ █  █  ▄▀
+  ██  ██      ██   █ █▄▄█ █▀▀▌
+  ██  ██      ▀████▀ █  █ █  █
+  ▀█   ▀        ▀        █  █
 ```
 
-Hasil pindai ada di folder: **`~/kobra-hasil`**
+# 🐍 KOBRA — Bug Bounty Scanner
+
+### The Overpowered All-in-One Scanner for Authorized Security Testing
+
+[![Version](https://img.shields.io/badge/version-v3.3.2-blue.svg)](https://github.com/shenyo1/kobra/releases/tag/v3.3.2)
+[![Tests](https://img.shields.io/badge/tests-194%20passing-brightgreen.svg)]()
+[![Warnings](https://img.shields.io/badge/warnings-0-brightgreen.svg)]()
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Rust](https://img.shields.io/badge/rust-1.82%2B-orange.svg)](https://www.rust-lang.org/)
+[![CI](https://img.shields.io/badge/CI-passing-brightgreen.svg)](https://github.com/shenyo1/kobra/actions)
+
+**53 scan modules** · **14 engines** · **10 report formats** · **194 tests** · **~19,500 LOC**
+
+[Features](#-features) · [Quick Start](#-quick-start) · [Usage](#-usage) · [MCP](#-mcp-integration) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+
+</div>
 
 ---
 
-## Cara Pakai Lanjut (Command Asli)
+## 🎯 What is KOBRA?
 
-Jika Anda sudah biasa terminal:
+KOBRA is a **defensive security scanner** designed for authorized bug bounty hunters and penetration testers. Built in Rust for performance and reliability, KOBRA combines vulnerability scanning, attack chain detection, and intelligent triage into a single binary.
 
-```bash
-# Mode normal
-kobra -t https://contoh.com
-
-# Mode gila (lebih banyak tes)
-kobra -t https://contoh.com -m crazy
-
-# Simpan hasil ke file
-kobra -t https://contoh.com -m crazy -j -o hasil.json
+```
+Target → KOBRA → Findings (JSON/MD/HTML/SARIF)
+                    ↓
+              MCP Server → AI Agents (auto-exploit chains)
 ```
 
-Mode:
-- `stealth` → pelan, sulit terdeteksi
-- `normal` → biasa
-- `crazy` → agresif, banyak tes (disarankan untuk bug bounty)
+### Why KOBRA?
+
+| Other scanners | KOBRA |
+|---|---|
+| ❌ Single vulnerability class per tool | ✅ **53 modules** in one binary |
+| ❌ Need multiple separate tools | ✅ Recon → Scan → Triage → Report |
+| ❌ Tons of false positives | ✅ **AI Triage** + statistical detection |
+| ❌ Manual report writing | ✅ Multi-format output (SARIF, HTML, MD, JSON) |
+| ❌ CI integration is hard | ✅ **Native MCP** + GitHub Actions |
+| ❌ Manual exploitation chains | ✅ **Auto chain detection** |
 
 ---
 
-## Pakai dari dalam Hermes Agent (AI Assistant)
+## ✨ Features
 
-KOBRA bisa dikendalikan oleh AI (Hermes Agent) lewat MCP.
+### 🔍 Scan Modules (53)
+- **Web**: XSS, SQLi, SSRF, SSTI, RCE, XXE, Command Injection
+- **API**: IDOR, Mass Assignment, GraphQL, OAuth, JWT, OpenAPI/Swagger
+- **Auth**: Magic-link ATO, Multi-tenant, Session, Cookie
+- **Modern**: HTTP Smuggling v2, WebSocket, gRPC, Prototype Pollution
+- **Recon**: Subdomain Takeover (70+ providers), JS Bundle Analysis, Source Maps
+- **Specialized**: AI Prompt Injection, Payment Logic, Email-only ATO
 
-1. Pastikan `mcp` sudah terpasang:
-   ```bash
-   pip install mcp
-   ```
-2. Hubungkan Hermes ke `kobra_mcp.py` (tanyakan pembuat bot Anda).
-3. Lalu Anda cukup bilang ke bot:
-   *"Pindai https://contoh.com pakai KOBRA"*
-   Bot akan menjalankan alat ini untuk Anda.
+### ⚙️ Engines (14)
+- **AI Triage** — LLM-powered FP filter + fix suggestions
+- **Statistical Detection** — anti-False Positive timing analysis
+- **Attack Chains** — auto-detect XSS→ATO, SSRF→cloud, etc.
+- **Template Engine** — YAML/JSON vuln checks
+- **Nuclei Compat** — run existing nuclei templates
+- **Diff Engine** — compare scans over time
+- **Watch Mode** — periodic rescan + webhook alerts
 
-Tools yang tersedia di MCP:
-- `scan_target` — pindai 1 situs
-- `run_orchestrator` — pindai lengkap (subdomain + fuzz)
-- `chain_report` — gabungkan celah jadi rantai serangan
-- `api_break` — tes API (IDOR, JWT, dll)
-- `cloud_enum` — cek salah config cloud
-- `ctf_payloads` — buat payload latihan CTF
-
----
-
-## Apa yang KOBRA Cek?
-
-KOBRA memeriksa banyak jenis celah, di antaranya:
-- XSS (script disuntik ke halaman)
-- SQL Injection (curi data database)
-- SSRF (akses server dalam)
-- SSTI (eksekusi kode di template)
-- Auth/Login lemah (akses tanpa izin)
-- WAF bypass (lewati pembatas)
-- Multi-tenant (bocor data pengguna lain)
-- **Email-only Login Mass ATO** (endpoint `/login` yang kasih token tanpa password/OTP)
-- Dan 36 jenis lainnya (total 53 modul scan + 14 engine + 10 report)
-
-Semua hasil ditampilkan jujur (tidak disembunyikan).
+### 📊 Reports (10)
+JSON · Markdown · HTML Dashboard · SARIF v2.1 · PoC Bash Scripts · Webhooks (Slack/Discord/Generic) · Diff Dashboard · Plain Output · Simple (Bahasa ID)
 
 ---
 
-## Modul: Email-Only Login Mass ATO (`email_ato`)
+## 🚀 Quick Start
 
-Mendeteksi pola Mass ATO yang ditemukan di wibuku.app:
+### One-line install
 
-- **Apa:** Endpoint `/login` (atau `/api/login`, `/auth/login`, dll) yang menerima hanya `{"email": "..."}` dan membalas dengan session/token — tanpa password, tanpa OTP, tanpa email-verification link.
-- **Bahaya:** Penyerang bisa enumerasi email lalu mendapat sesi sah untuk setiap akun.
-- **Cara cek KOBRA:**
-  1. Kirim 2 email acak (`kobra_probe_<random>@example.com`) → kalau balasannya identik dan ada field `session`/`token` → **CRITICAL** (Mass ATO confirmed).
-  2. Kirim `notanemail` (kontrol negatif) → kalau tetap dapat token → **CRITICAL** (tanpa validasi sama sekali).
-  3. Kalau balasannya hanya berisi string panjang tak bernama → **HIGH** (perlu tinjauan manual).
-- **Endpoint yang diuji:** `/login`, `/api/login`, `/auth/login`, `/api/auth/login`, `/api/v1/login`, `/api/v1/auth/login`, `/signin`, `/api/signin`, `/session`, `/api/session`, `/authenticate`.
-- **Confidence:** 70 (heuristik string) → 90 (kedua email sah identik) → 95 (input tanpa email diterima juga).
+```bash
+# Download latest release
+curl -L https://github.com/shenyo1/kobra/releases/download/v3.3.2/kobra -o ~/.local/bin/kobra
+chmod +x ~/.local/bin/kobra
+
+# Verify
+kobra --version
+# 🐍 kobra 3.3.2
+```
+
+### First scan (1 minute)
+
+```bash
+# ⚠️ ONLY on authorized targets (bug bounty programs, your own lab)
+kobra -t https://your-authorized-target.com -m crazy --no-confirm --simple
+```
+
+Sample output:
+```
+🐍 KOBRA v3.3.2 — all-in-one BB scanner (OVERPOWERED)
+[*] mode=Crazy concurrency=60 timeout=15s
+
+[+] https://target.com → 23 finding(s)
+  🔴 2 High
+  🟠 5 Medium
+  🟡 10 Low
+  ℹ️  6 Info
+
+[*] report written to ./kobra-results.json
+[+] HTML dashboard written to ./report.html
+[+] SARIF report written to ./kobra.sarif
+```
 
 ---
 
-## Tips Aman
+## 📖 Usage
 
-- Selalu minta izin dulu.
-- Jangan kirim terlalu banyak request cepat (bisa merusak situs).
-- Laporkan temuan lewat jalur resmi program bug bounty.
-- Jangan akses data orang lain.
+### Basic
+
+```bash
+# Mode selection
+kobra -t https://target.com -m stealth    # Slow, low-detection
+kobra -t https://target.com -m normal     # Balanced
+kobra -t https://target.com -m crazy      # Aggressive (recommended for BB)
+
+# Multiple targets
+kobra -t https://a.com,https://b.com -m crazy
+
+# Output formats
+kobra -t https://target.com -m crazy \
+  --json -o results.json \
+  --html report.html \
+  --md report.md \
+  --sarif kobra.sarif
+```
+
+### Authenticated Scanning
+
+```bash
+# Single auth
+kobra -t https://api.target.com \
+  --auth "https://api.target.com/login|username=admin@test.com&password=***"
+
+# Multi-session (IDOR detection)
+kobra -t https://api.target.com \
+  --auth "https://api/login|user=A" \
+  --auth2 "https://api/login|user=B"
+```
+
+### Advanced
+
+```bash
+# Use nuclei templates
+kobra -t https://target.com --nuclei-dir ~/nuclei-templates/
+
+# Custom wordlist
+kobra -t https://target.com --wordlist ~/SecLists/common.txt
+
+# Browser scan (DOM XSS, SPA crawl)
+kobra -t https://target.com --browser --screenshot-dir ./evidence
+
+# AI Triage (auto-filter FP)
+kobra -t https://target.com --triage
+
+# Scan profiles (preset configs)
+kobra -t https://target.com --profile bb       # Bug bounty
+kobra -t https://target.com --profile pentest  # Pen test
+kobra -t https://target.com --profile quick    # Quick triage
+kobra -t https://target.com --profile ci       # CI/CD
+
+# Diff against previous scan
+kobra -t https://target.com --diff-baseline previous.json
+
+# Watch mode (periodic rescan)
+kobra -t https://target.com --watch --watch-interval 15 --discord-webhook <URL>
+
+# Beginner-friendly output (Bahasa Indonesia)
+kobra -t https://target.com --simple --no-confirm
+```
+
+**Full flag list:** see [`HERMES_SETUP.md`](HERMES_SETUP.md)
 
 ---
 
-## Folder Proyek
+## 🤖 MCP Integration
 
-- `src/` → kode pemindai (bahasa Rust)
-- `kobra-cli.sh` → pembungkus ramah pemula
-- `kobra_mcp.py` → penghubung ke AI (Hermes)
-- `kobra-orchestrator.py` → pindai otomatis lengkap
-- `sumopod_technique_playbook.md` → catatan teknik 2026
+KOBRA exposes 8 tools via [Model Context Protocol](https://modelcontextprotocol.io/) for AI agents:
 
-Selamat mencoba, dan pakai dengan bertanggung jawab! 🛡️
+| Tool | Function |
+|------|----------|
+| `scan_target` | Run full scan (all flags exposed) |
+| `idor_scan` | Multi-session IDOR testing |
+| `diff_scan` | Compare with previous baseline |
+| `run_orchestrator` | Full pipeline (recon → scan → nuclei → ffuf → dalfox) |
+| `chain_report` | Compose attack chains from findings |
+| `api_break` | API-specific testing (REST/GraphQL) |
+| `cloud_enum` | Cloud metadata enumeration (AWS/Azure/GCP) |
+| `ctf_payloads` | Generate CTF payloads |
+
+### Setup
+
+```bash
+pip install mcp
+hermes mcp add kobra --command python3 --args ~/.local/opt/kobra/kobra_mcp.py
+hermes mcp test kobra
+# ✓ Connected (700ms)
+# ✓ Tools discovered: 8
+```
+
+Then in your AI agent:
+> "Pindai https://target.com pakai KOBRA"
+
+---
+
+## 🐳 Docker
+
+```bash
+docker build -t kobra:latest .
+docker run -v $(pwd)/results:/workspace kobra:latest \
+  -t https://target.com -m crazy --triage \
+  -o /workspace/results.json
+```
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────┐
+│  CLI (clap) / MCP Server (Python)            │
+└─────────────────┬───────────────────────────┘
+                  ↓
+┌─────────────────────────────────────────────┐
+│  Recon Module (crt.sh + subfinder + httpx)   │
+└─────────────────┬───────────────────────────┘
+                  ↓
+┌─────────────────────────────────────────────┐
+│  Parallel Scan Engine                        │
+│  ┌─────────┬─────────┬─────────┬─────────┐    │
+│  │ Module1 │ Module2 │ Module3 │  ...   │    │
+│  │  XSS    │  SQLi   │  SSRF   │        │    │
+│  └─────────┴─────────┴─────────┴─────────┘    │
+└─────────────────┬───────────────────────────┘
+                  ↓
+┌─────────────────────────────────────────────┐
+│  AI Triage + Chain Detection                  │
+└─────────────────┬───────────────────────────┘
+                  ↓
+┌─────────────────────────────────────────────┐
+│  Reports (JSON/MD/HTML/SARIF/Webhooks)        │
+└─────────────────────────────────────────────┘
+```
+
+---
+
+## 📊 Stats
+
+```
+🐍 KOBRA v3.3.2
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Scan modules:    53
+Engine modules:  14
+Report formats:  10
+Tests:           194 (0 failed, 0 warnings)
+Source LOC:      ~19,500
+Binary size:     ~19MB
+CI:              ✓ passing (GitHub Actions)
+Releases:        15+ (v1.0.0 → v3.3.2)
+License:         MIT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## ⚠️ Ethics & Legal Use
+
+> **KOBRA is for AUTHORIZED security testing ONLY.**
+
+✅ Authorized use cases:
+- Official bug bounty programs (HackerOne, Bugcrowd, Sumopod, etc.)
+- Penetration tests with written authorization
+- CTF competitions
+- Educational lab environments
+
+❌ Unauthorized use is:
+- **ILLEGAL** (CFAA, UU ITE, Computer Misuse Act, etc.)
+- Subject to criminal prosecution
+- A violation of platform Terms of Service
+
+**Always obtain written authorization BEFORE testing.**
+
+See [LICENSE](LICENSE) for full ethical use notice and [SECURITY.md](SECURITY.md) for vulnerability reporting.
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+**Mandatory rules for PRs:**
+1. Follow the **negative-control discipline** (always fetch baseline before flagging)
+2. Update all 13 documentation points (see UPDATE RULE in CONTRIBUTING.md)
+3. Add unit tests (positive + negative cases)
+4. Zero warnings, zero old version refs
+
+---
+
+## 📜 License
+
+[MIT License](LICENSE) — see file for full text.
+
+---
+
+## 🙏 Acknowledgments
+
+- Inspired by **nuclei**, **ffuf**, **dalfox**, **sqlmap**, and **burp suite**
+- Built with **Rust** + ❤️
+- Thanks to all **bug bounty hunters** keeping the internet safer
+
+---
+
+<div align="center">
+
+**[⬆ Back to Top](#-kobra--bug-bounty-scanner)**
+
+Made with 🐍 + ☕ + 🌸 by [shenyo1](https://github.com/shenyo1)
+
+</div>
