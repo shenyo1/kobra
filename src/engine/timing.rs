@@ -63,19 +63,25 @@ pub fn is_delayed(baseline: &[Duration], response: &[Duration], threshold_ms: u6
 
 /// Statistical time-based detection (anti-FP v3.3.0)
 /// Returns true ONLY if:
-///   (1) probe p90 > 2x baseline p90 (relative delay)
+///   (1) probe median > 2x baseline median (relative delay)
 ///   AND
-///   (2) probe p90 > 2 seconds absolute (real SQLi, not network jitter)
+///   (2) at least 3 of 5 probe samples > 2 seconds (consistent delay, not jitter)
 pub fn is_delayed_strong(baseline: &[Duration], response: &[Duration]) -> bool {
     if baseline.is_empty() || response.is_empty() {
         return false;
     }
-    let p90_baseline = percentile(baseline, 0.90);
-    let p90_response = percentile(response, 0.90);
+    let med_baseline = percentile(baseline, 0.50);
+    let med_response = percentile(response, 0.50);
 
-    let ratio = p90_response.as_secs_f64() / p90_baseline.as_secs_f64().max(0.001);
-    let abs_delay_ok = p90_response >= Duration::from_millis(2000);
+    // (1) Median delay: probe median must be > 2x baseline median
+    let ratio = med_response.as_secs_f64() / med_baseline.as_secs_f64().max(0.001);
     let rel_delay_ok = ratio >= 2.0;
+
+    // (2) Consistency: at least 3 of 5 probe samples must be > 2 seconds
+    let slow_count = response.iter()
+        .filter(|d| d.as_millis() > 2000)
+        .count();
+    let abs_delay_ok = slow_count >= 3;
 
     rel_delay_ok && abs_delay_ok
 }
