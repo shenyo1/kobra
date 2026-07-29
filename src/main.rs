@@ -153,6 +153,10 @@ struct Cli {
     #[arg(long)]
     triage: bool,
 
+    /// Use a scan profile (bb, pentest, quick, ci, or custom).
+    #[arg(long)]
+    profile: Option<String>,
+
     /// List all available scan profiles.
     #[arg(long)]
     profile_list: bool,
