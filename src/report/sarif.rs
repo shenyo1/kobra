@@ -40,7 +40,7 @@ pub fn to_sarif(findings: &[Finding], engagement: &str) -> serde_json::Value {
         .iter()
         .enumerate()
         .map(|(i, f)| {
-            // v3.3.1 fix: GitHub Code Scanning rejects https:// URIs for SARIF upload.
+            // v4.0.0 (was v3.3.1 fix): GitHub Code Scanning rejects https:// URIs for SARIF upload.
             // Always use file:// scheme (SARIF spec compliant) unless the target
             // is explicitly a remote endpoint we cannot resolve locally.
             let uri = if f.target.starts_with("file://") {

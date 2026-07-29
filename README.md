@@ -12,7 +12,7 @@
 
 ### The Overpowered All-in-One Scanner for Authorized Security Testing
 
-[![Version](https://img.shields.io/badge/version-v3.3.2-blue.svg)](https://github.com/shenyo1/kobra/releases/tag/v3.3.2)
+[![Version](https://img.shields.io/badge/version-v4.0.0-blue.svg)](https://github.com/shenyo1/kobra/releases/tag/v4.0.0)
 [![Tests](https://img.shields.io/badge/tests-194%20passing-brightgreen.svg)]()
 [![Warnings](https://img.shields.io/badge/warnings-0-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -80,7 +80,7 @@ JSON · Markdown · HTML Dashboard · SARIF v2.1 · PoC Bash Scripts · Webhooks
 
 ```bash
 # Download latest release
-curl -L https://github.com/shenyo1/kobra/releases/download/v3.3.2/kobra -o ~/.local/bin/kobra
+curl -L https://github.com/shenyo1/kobra/releases/download/v4.0.0/kobra -o ~/.local/bin/kobra
 chmod +x ~/.local/bin/kobra
 
 # Verify
@@ -97,7 +97,7 @@ kobra -t https://your-authorized-target.com -m crazy --no-confirm --simple
 
 Sample output:
 ```
-🐍 KOBRA v3.3.2 — all-in-one BB scanner (OVERPOWERED)
+🐍 KOBRA v4.0.0 — all-in-one BB scanner (OVERPOWERED)
 [*] mode=Crazy concurrency=60 timeout=15s
 
 [+] https://target.com → 23 finding(s)
@@ -256,7 +256,7 @@ docker run -v $(pwd)/results:/workspace kobra:latest \
 ## 📊 Stats
 
 ```
-🐍 KOBRA v3.3.2
+🐍 KOBRA v4.0.0
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Scan modules:    53
 Engine modules:  14
@@ -265,7 +265,7 @@ Tests:           194 (0 failed, 0 warnings)
 Source LOC:      ~19,500
 Binary size:     ~19MB
 CI:              ✓ passing (GitHub Actions)
-Releases:        15+ (v1.0.0 → v3.3.2)
+Releases:        16+ (v1.0.0 → v4.0.0)
 License:         MIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```

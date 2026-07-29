@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+# KOBRA pre-commit check — run BEFORE every git commit
+# Enforces UPDATE RULE v2 (28 titik)
+
+set -e
+cd ~/.local/opt/kobra
+
+# Auto-detect current version from Cargo.toml
+NEW_VERSION=$(grep '^version = ' Cargo.toml | head -1 | sed 's/version = "\(.*\)"/\1/')
+NEW_VERSION_SHORT=$(echo "$NEW_VERSION" | sed 's/\.0$//')
+
+# Normalize tag name (add v prefix if missing)
+TAG_NAME="v$NEW_VERSION"
+
+echo "═══ KOBRA PRE-COMMIT CHECK ═══"
+echo "Target version: $NEW_VERSION (tag: $TAG_NAME)"
+echo ""
+
+# 1-13: Tech sync
+echo "→ Tech sync (1-13)..."
+grep -q "^version = \"$NEW_VERSION\"" Cargo.toml && echo "  ✓ Cargo.toml"
+grep -q "KOBRA v$NEW_VERSION_SHORT" src/main.rs && echo "  ✓ main.rs"
+grep -q "$TAG_NAME/kobra" .github/workflows/kobra-scan.yml && echo "  ✓ workflow yml"
+grep -q "KOBRA v$NEW_VERSION_SHORT" src/report/webhook.rs && echo "  ✓ webhook footer"
+grep -q "$TAG_NAME/kobra" HERMES_SETUP.md && echo "  ✓ HERMES_SETUP.md"
+grep -q "KOBRA v$NEW_VERSION" README.md && echo "  ✓ README"
+
+# 14-21: Repo meta
+echo ""
+echo "→ Repo meta (14-21)..."
+[ -f LICENSE ] && echo "  ✓ LICENSE"
+[ -f CONTRIBUTING.md ] && echo "  ✓ CONTRIBUTING.md"
+[ -f SECURITY.md ] && echo "  ✓ SECURITY.md"
+[ -f CODE_OF_CONDUCT.md ] && echo "  ✓ CoC"
+[ -f CHANGELOG.md ] && echo "  ✓ CHANGELOG"
+[ -f .github/ISSUE_TEMPLATE/bug_report.md ] && echo "  ✓ bug_report.md"
+[ -f .github/ISSUE_TEMPLATE/feature_request.md ] && echo "  ✓ feature_request.md"
+grep -q "img.shields.io" README.md && echo "  ✓ README badges"
+REPO_DESC=$(gh repo view shenyo1/kobra --json description -q .description 2>/dev/null || echo "")
+if echo "$REPO_DESC" | grep -q "$NEW_VERSION_SHORT"; then echo "  ✓ gh repo description"; else echo "  ⚠ gh repo description"; fi
+
+# 22: FIX comments
+echo ""
+echo "→ Comment check (22)..."
+STALE_FIX=$(grep -rn "// v[0-9]\.[0-9].*\(FIX\|fix\)" src/ 2>/dev/null | grep -v "v$NEW_VERSION_SHORT" | grep -v "was v[0-9]" | wc -l)
+if [ "$STALE_FIX" -eq 0 ]; then echo "  ✓ All FIX comments updated"; else echo "  ⚠ $STALE_FIX stale FIX comments"; fi
+
+# 23: diff_dashboard Severity (check both forms)
+echo ""
+echo "→ Recurring bug (23)..."
+if grep -q "{Finding, Severity}" src/report/diff_dashboard.rs 2>/dev/null; then
+  echo "  ✓ Severity imported"
+elif grep -q "#\[cfg(test)\]" src/report/diff_dashboard.rs && grep -q "use crate::types::Severity" src/report/diff_dashboard.rs; then
+  echo "  ✓ Severity imported (cfg-test only)"
+else
+  echo "  ⚠ Severity NOT imported"
+fi
+
+# 24: Build + Test
+echo ""
+echo "→ Build + Test (24)..."
+BUILD_WARNINGS=$(cargo build --release 2>&1 | grep -E "^warning:" | grep -v generated | wc -l)
+echo "  Build warnings: $BUILD_WARNINGS"
+TEST_RESULT=$(cargo test --release 2>&1 | grep "test result" | head -1 || echo "FAILED")
+echo "  Test: $TEST_RESULT"
+
+# 25: Binary verification
+echo ""
+echo "→ Binary (25)..."
+cp target/release/kobra ~/.local/bin/ 2>/dev/null || true
+ACTUAL=$(~/.local/bin/kobra --version 2>/dev/null || echo "NOT INSTALLED")
+if echo "$ACTUAL" | grep -q "$NEW_VERSION"; then echo "  ✓ Binary at v$NEW_VERSION ($ACTUAL)"; else echo "  ⚠ Binary is '$ACTUAL'"; fi
+
+# 26: GitHub release
+echo ""
+echo "→ GitHub release (26)..."
+RELEASE_TAG=$(gh release list --repo shenyo1/kobra --limit 1 --json tagName -q '.[0].tagName' 2>/dev/null || echo "")
+if [ "$RELEASE_TAG" = "$TAG_NAME" ]; then echo "  ✓ Release $RELEASE_TAG exists"; else echo "  ⚠ Latest release: $RELEASE_TAG (need: $TAG_NAME)"; fi
+
+# 27: Tag freshness
+echo ""
+echo "→ Tag freshness (27)..."
+TAG_RAW=$(gh api repos/shenyo1/kobra/git/refs/tags/$TAG_NAME --jq '.object.sha' 2>/dev/null)
+if [ -z "$TAG_RAW" ] || [ "$TAG_RAW" = "null" ]; then
+  echo "  ⚠ NO tag found — run: git tag $TAG_NAME --force && git push origin $TAG_NAME --force"
+  TAG_COMMIT="NO TAG"
+else
+  TAG_COMMIT=$(echo "$TAG_RAW" | head -c 40)
+fi
+HEAD_COMMIT=$(git rev-parse HEAD | head -c 40)
+if [ "$TAG_COMMIT" = "$HEAD_COMMIT" ]; then
+  echo "  ✓ Tag matches HEAD ($HEAD_COMMIT)"
+elif [ "$TAG_COMMIT" = "NO TAG" ]; then
+  echo "  ⚠ NO tag found"
+else
+  echo "  ⚠ Tag=$TAG_COMMIT, HEAD=$HEAD_COMMIT — force-push tag!"
+fi
+
+# 28: Global stale refs
+echo ""
+echo "→ Global stale refs (28)..."
+STALE=$(grep -rn "v[0-9]\.[0-9]\.[0-9]" --include="*.rs" --include="*.md" --include="*.toml" --include="*.yml" src/ README.md HERMES_SETUP.md CHANGELOG.md 2>/dev/null | grep -v "$NEW_VERSION" | grep -v "// v[0-9]\.[0-9]\.[0-9]" | grep -v "v[0-9]\.[0-9]\.x" | grep -v target/ | grep -v ".git/" | wc -l)
+if [ "$STALE" -eq 0 ]; then echo "  ✓ No stale refs"; else echo "  ⚠ $STALE potential stale refs (verify manually)"; fi
+
+echo ""
+echo "═══ CHECK COMPLETE ═══"

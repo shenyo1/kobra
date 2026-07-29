@@ -3,7 +3,9 @@
 //! Usage: `kobra diff baseline.json current.json -o diff.html`
 
 use crate::engine::diff;
-use crate::types::{Finding, Severity};
+use crate::types::Finding;
+#[cfg(test)]
+use crate::types::Severity;
 use std::fs;
 
 /// Generate visual diff HTML report
