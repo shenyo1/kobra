@@ -40,7 +40,7 @@ CMD ["--help"]
 
 # Labels
 LABEL maintainer="shenyo1"
-LABEL version="3.1.0"
-LABEL description="KOBRA — all-in-one bug bounty scanner with AI triage, JS deep analysis, API schema fuzzing"
+LABEL version="4.7.0"
+LABEL description="KOBRA — all-in-one bug bounty scanner v4.7.0 with attack plugin layer, OOB listener, wordlist brute, Burp Intruder, GraphQL deep, WebSocket frame encoding"
 LABEL org.opencontainers.image.source="https://github.com/shenyo1/kobra"
 LABEL org.opencontainers.image.licenses="MIT"

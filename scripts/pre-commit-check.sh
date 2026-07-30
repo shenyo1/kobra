@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # KOBRA pre-commit check — run BEFORE every git commit
-# Enforces UPDATE RULE v2 (28 titik)
+# Enforces UPDATE RULE v6 (36 titik)
 
 set -e
 cd ~/.local/opt/kobra
@@ -215,6 +215,15 @@ WORKFLOW_TAG=$(grep -oP 'releases/download/v\K[0-9.]+' .github/workflows/*.yml 2
 if [ -z "$WORKFLOW_TAG" ]; then echo "  (no workflow found)"
 elif [ "$WORKFLOW_TAG" = "$NEW_VERSION" ]; then echo "  ✓ Workflow install URL points to v$NEW_VERSION"
 else echo "  ⚠ Workflow install URL points to v$WORKFLOW_TAG, latest is v$NEW_VERSION"; fi
+
+# 37: Release has binary named just 'kobra' (NEW 2026-07-29 - workflow expected 'kobra' not 'kobra-vN.M.O-pN')
+echo ""
+echo "→ Release asset named 'kobra' (37)..."
+if gh release view "$TAG_NAME" --repo "shenyo1/kobra" --json assets --jq '.assets[].name' 2>/dev/null | grep -qx "kobra"; then
+  echo "  ✓ Release $TAG_NAME has asset 'kobra' (workflow-downloadable)"
+else
+  echo "  ⚠ Release $TAG_NAME missing 'kobra' asset (workflow would fail with curl 9-byte response)"
+fi
 
 echo ""
 echo "═══ CHECK COMPLETE ═══"

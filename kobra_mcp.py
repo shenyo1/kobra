@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 """
-KOBRA v4.4.0 MCP server — exposes FULL KOBRA suite as MCP tools over stdio.
-Supports ALL v4.4.0 features: 5 lessons from real-world CF filter + AI gateway + DNS pivot + auth flow + origin probe + v4.3.0 auth-aware + stack-specific payloads + v4.2.0 SPA fallback + v4.1.0 suites (nuclei compat, IDOR, tech fingerprint, SARIF,
-screenshots, passive proxy, wordlist fuzzing, diff scan, cross-target chain, watch mode.
+KOBRA v4.7.0 MCP server — exposes FULL KOBRA suite as MCP tools over stdio.
+Supports ALL v4.7.0 features: 5 features (OOB Listener + Wordlist Brute + Burp
+Intruder + GraphQL Deep + WebSocket Frame) + v4.6.0 attack plugin layer (5
+shapes via dispatcher, JWT Killer) + v4.5.0 attack plugin layer + v4.4.0
+Sumopod lessons (CF filter, AI gateway, DNS pivot, auth flow, origin probe)
++ v4.3.0 auth-aware + stack-specific payloads + v4.2.0 SPA fallback +
+v4.1.0 suites (nuclei compat, IDOR, tech fingerprint, SARIF,
+screenshots, passive proxy, wordlist fuzzing, diff scan, cross-target chain,
+watch mode).
 
 Setup:
   pip install mcp
