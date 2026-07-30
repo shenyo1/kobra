@@ -180,5 +180,23 @@ SCAN_BADGE=$(grep -oP '\*\*\K[0-9]+(?= scan module)' README.md | head -1)
 if [ "$SCAN_BADGE" = "$SCAN_ACTUAL" ]; then echo "  ✓ Scan modules: $SCAN_ACTUAL"
 else echo "  ⚠ README says $SCAN_BADGE scan modules, actual is $SCAN_ACTUAL"; fi
 
+# 34: CHANGELOG stats accuracy (NEW 2026-07-29 - onii-chan caught content drift)
+echo ""
+echo "→ CHANGELOG stats accuracy (34)..."
+ACTUAL_FILES=$(find src -name "*.rs" | wc -l)
+ACTUAL_LOC=$(find src -name "*.rs" -exec wc -l {} + | tail -1 | awk '{print $1}')
+ACTUAL_TESTS=$(grep -rE "#\[test\]|#\[tokio::test\]" src/ tests/ 2>/dev/null | wc -l)
+# Only consider current version entry [4.7.0] stats
+CURRENT_ENTRY=$(awk '/^## \[4.7.0\]/,/^## \[4.6.0\]/' CHANGELOG.md | head -15)
+CHANGELOG_FILE_CLAIM=$(echo "$CURRENT_ENTRY" | grep -oP '\b\d+\s+\.rs files?|\b\d+\s+Rust source files?|\b\d+\s+Rust files?' | head -1 | awk '{print $1}')
+CHANGELOG_LOC_CLAIM=$(echo "$CURRENT_ENTRY" | grep -oP '~[\d,]+\s+LOC' | head -1 | grep -oP '[\d,]+' | head -1 | tr -d ',')
+CHANGELOG_TESTS_CLAIM=$(echo "$CURRENT_ENTRY" | grep -oP '\b\d+\s+(?:tests|total tests|file-level tests)' | head -1 | awk '{print $1}')
+ERRORS=""
+[ -n "$CHANGELOG_FILE_CLAIM" ] && [ "$CHANGELOG_FILE_CLAIM" != "$ACTUAL_FILES" ] && ERRORS="$ERRORS files=${CHANGELOG_FILE_CLAIM}≠${ACTUAL_FILES}"
+[ -n "$CHANGELOG_LOC_CLAIM" ] && [ "$CHANGELOG_LOC_CLAIM" != "$ACTUAL_LOC" ] && ERRORS="$ERRORS LOC=${CHANGELOG_LOC_CLAIM}≠${ACTUAL_LOC}"
+[ -n "$CHANGELOG_TESTS_CLAIM" ] && [ "$CHANGELOG_TESTS_CLAIM" != "$ACTUAL_TESTS" ] && ERRORS="$ERRORS tests=${CHANGELOG_TESTS_CLAIM}≠${ACTUAL_TESTS}"
+if [ -z "$ERRORS" ]; then echo "  ✓ CHANGELOG stats accurate (files=$ACTUAL_FILES LOC=$ACTUAL_LOC tests=$ACTUAL_TESTS)"
+else echo "  ⚠ CHANGELOG drift:$ERRORS (real: files=$ACTUAL_FILES LOC=$ACTUAL_LOC tests=$ACTUAL_TESTS)"; fi
+
 echo ""
 echo "═══ CHECK COMPLETE ═══"

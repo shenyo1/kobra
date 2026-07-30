@@ -21,18 +21,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `sha1 = "0.10"` (new — for WS handshake hash)
 
 ### Stats
-- 90 Rust source files (was 86)
-- 50 net new tests (was 349 in v4.6.0 → 399 total)
-- ~32,000 LOC (was ~28,000)
+- 5 new modules (scan: wordlist, repeater, graphql_deep, websocket_v2; engine: oob_listener) + ~2,000 new LOC
+- 50 net new tests (350+ → 402 file-level)
+- ~19,441 LOC total across 111 Rust files
 
 ## [4.6.0] - 2026-07-29 — Event Bus + JWT Killer
 
 ### Added
 - **src/engine/event_bus.rs** — pub/sub between scan modules and attack plugins, std::sync::Mutex-based, zero-cost when no subscribers
 - **src/attack/jwt_crack.rs** — in-process HS256 JWT secret cracker with builtin 106-secret wordlist
-- **CLI flags** — `--jwt-kill <token>`, `--jwt-wordlist <file>` for direct JWT cracking
-- **Dependency** — `hmac = "0.12"` added to Cargo.toml (sha2, base64 already present)
-- **16 net new tests** — 6 event_bus + 10 jwt_crack
+- **src/attack/dispatcher.rs** — 5 plugin shapes (Subprocess/Workflow/Action/Chain/Orchestrator)
+- **src/attack/runner.rs** — subprocess executor with timeout
+- **CLI flags** — `--attack`, `--attack-run <name>`, `--attack-dir <path>`, `--jwt-kill <token>`, `--jwt-wordlist <file>`
+- **Dependency** — `hmac = "0.12"` added to Cargo.toml
+- **27 net new tests** — 6 event_bus + 10 jwt_crack + 11 dispatcher
 
 ### Architecture
 - EventBus: `subscribe(events, handler)` + `publish(event)` — handlers fire on event match
@@ -46,9 +48,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wordlist: 106 builtin secrets, custom file via `--jwt-wordlist`
 
 ### Stats
-- 96 modules total: 59 scan + 19 engine + 12 report + 3 attack + 1 event_bus + 2 cargo/CLI
-- 349 tests passing (+16 net from v4.5.0)
-- ~28,000 LOC
+- 5 modules added (4 attack + 1 event_bus; new layers since v4.5.0)
+- ~330 LOC added (event_bus 226, jwt_crack 231, dispatcher 469, runner 219, plus CLI flags)
+- hmac = "0.12" dep introduced
 
 ## [4.5.0] - 2026-07-29 — Attack Plugin Layer
 
