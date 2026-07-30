@@ -27,7 +27,7 @@ pub fn classify_ai_response(body: &str, _h: &str, server: &str) -> Option<(&'sta
     if body.contains("LiteLLM Virtual Key expected") {
         return Some(("LiteLLM", "LiteLLM proxy virtual key auth"));
     }
-    // v4.4.0 Lesson 4 fix: uvicorn + api key = LiteLLM (check BEFORE generic OpenAI-compatible,
+    // v4.4.0 Lesson 4 fix: uvicorn + api key = LiteLLM (check BEFORE generic OpenAI-compatible, verified v4.7.0)
     // because LiteLLM also returns the generic "error":{"message":"..."} envelope)
     if srv_l.contains("uvicorn") && body.contains("api key") {
         return Some(("LiteLLM", "uvicorn + api key = likely LiteLLM"));

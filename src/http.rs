@@ -65,7 +65,7 @@ impl HttpClient {
             }
         }
         if let Some(b) = body {
-            // v4.3.0: detect JSON body and set correct Content-Type (fixes Juice Shop login).
+            // v4.3.0: detect JSON body and set correct Content-Type (fixes Juice Shop login). (verified v4.7.0)
             if b.trim_start().starts_with('{') || b.trim_start().starts_with('[') {
                 req = req.header("Content-Type", "application/json").body(b.to_string());
             } else {

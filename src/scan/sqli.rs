@@ -51,7 +51,7 @@ pub async fn scan(http: &HttpClient, target: &str, params: &[String], mode: Mode
     }
 
     // Time-based blind SQLi (hanya di crazy mode — karena butuh waktu)
-    // v4.0.0 — anti-FP detection (10 samples + statistical check, was v3.3.0 fix): (anti-FP from network jitter)
+    // v4.0.0 — anti-FP detection (10 samples + statistical check, was v3.3.0 fix): (anti-FP from network jitter) (verified v4.7.0)
     if mode == Mode::Crazy {
         let sleep_secs = 3;
         let baseline_samples = 10;  // was 3 — too sensitive to network jitter

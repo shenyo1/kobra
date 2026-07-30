@@ -54,7 +54,7 @@ pub mod headless;      // Headless browser — DOM XSS, SPA crawl, JS execution
 pub mod crawler;       // Basic crawler — JS endpoints, sitemap, robots, links
 pub mod waf_learn;     // WAF Learning Mode — detect + bypass suggestions
 pub mod tech_fingerprint; // Tech fingerprinting — detect frameworks/CMS/servers
-pub mod stack_fingerprint; // v4.2.0: Stack fingerprint — SPA/server/API style (fixes generic-payload FP)
+pub mod stack_fingerprint; // v4.2.0: Stack fingerprint — SPA/server/API style (fixes generic-payload FP) (verified v4.7.0)
 pub mod auth_aware;       // v4.3.0: Auth-aware probing — expand paths when --auth configured
 pub mod cloudflare_ranges; // v4.4.0: Cloudflare IP detection — filter takeover FPs (Lesson 1)
 pub mod ai_gateway;        // v4.4.0: AI gateway detector — LiteLLM/vLLM/OpenAI (Lesson 4)
