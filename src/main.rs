@@ -10,8 +10,7 @@ use kobra::types::{Mode, Severity};
 use std::sync::Arc;
 
 #[derive(Parser)]
-#[command(name = "kobra", version, about = "KOBRA v4.1 — Historical Tracking + Dedup + Dashboard + Plugin Marketplace + i18n")]
-struct Cli {
+#[command(name = "kobra", version, about = "KOBRA v4.7 — OOB Listener + Wordlist Brute + Burp Intruder + GraphQL Deep + WebSocket Frame")] struct Cli {
     /// Target URL(s). Comma-separated for multiple.
     #[arg(short, long, value_delimiter = ',')]
     target: Vec<String>,
@@ -160,6 +159,28 @@ struct Cli {
     /// List all available scan profiles.
     #[arg(long)]
     profile_list: bool,
+
+    /// Enable attack plugin layer (auto-exploit on finding events).
+    /// Loads plugins from plugins-attack/ or --attack-dir.
+    #[arg(long)]
+    attack: bool,
+
+    /// Custom attack plugin directory (default: ./plugins-attack).
+    #[arg(long)]
+    attack_dir: Option<String>,
+
+    /// Run a specific attack plugin by name (e.g. --attack-run sqlmap-auto).
+    #[arg(long)]
+    attack_run: Option<String>,
+
+    /// Crack a JWT token with builtin wordlist.
+    /// Example: --jwt-kill eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.abc
+    #[arg(long)]
+    jwt_kill: Option<String>,
+
+    /// Use custom JWT wordlist file (newline-separated secrets).
+    #[arg(long)]
+    jwt_wordlist: Option<String>,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
@@ -303,6 +324,134 @@ async fn main() -> anyhow::Result<()> {
     // Apply auth to HTTP client
     http.apply_auth(auth_headers, cli.cookie.clone());
     let http = Arc::new(http);
+
+    // ============================================================
+    // ATTACK PLUGIN LAYER (v4.5.0)
+    // ============================================================
+    if cli.attack || cli.attack_run.is_some() {
+        use kobra::attack::AttackRegistry;
+        use kobra::attack::dispatcher;
+
+        let attack_dir = cli
+            .attack_dir
+            .clone()
+            .map(std::path::PathBuf::from)
+            .unwrap_or_else(|| {
+                let cwd_attack = std::path::PathBuf::from("plugins-attack");
+                if cwd_attack.exists() {
+                    cwd_attack
+                } else {
+                    std::env::var("HOME")
+                        .map(|h| {
+                            std::path::PathBuf::from(h).join(".local/share/kobra/plugins/attack")
+                        })
+                        .unwrap_or_else(|_| cwd_attack)
+                }
+            });
+
+        let mut registry = AttackRegistry::new(attack_dir.clone());
+        match registry.load_all() {
+            Ok(report) => {
+                println!(
+                    "[*] attack plugins loaded: {} (dir: {})",
+                    report.loaded,
+                    report.dir.display()
+                );
+                for err in &report.errors {
+                    eprintln!("[!] attack plugin error: {}", err);
+                }
+            }
+            Err(e) => eprintln!("[!] attack plugin load failed: {}", e),
+        }
+
+        if let Some(name) = &cli.attack_run {
+            let plugin = registry
+                .plugins
+                .get(name)
+                .or_else(|| {
+                    registry.plugins.values().find(|p| p.name.contains(name))
+                })
+                .ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "attack plugin '{}' not found. Available: {:?}",
+                        name,
+                        registry.plugins.keys().collect::<Vec<_>>()
+                    )
+                })?;
+            let target = cli
+                .target
+                .first()
+                .cloned()
+                .unwrap_or_else(|| "https://localhost".to_string());
+            let eng_id = &cli.engagement;
+            let out_dir = format!("/tmp/kobra-attack/{eng_id}");
+            std::fs::create_dir_all(&out_dir).ok();
+            println!("\n[*] running attack plugin: {}", plugin.name);
+            let outcome = dispatcher::dispatch(plugin, &target, eng_id, &out_dir);
+            println!("\n[+] attack plugin outcome:");
+            println!("    kind: {:?}", outcome.kind);
+            println!("    steps_executed: {}", outcome.steps_executed);
+            println!("    duration_ms: {}", outcome.duration_ms);
+            println!("    outputs: {:?}", outcome.output_paths);
+            for f in &outcome.findings {
+                println!("    finding: {}", f);
+            }
+            for err in &outcome.errors {
+                eprintln!("    error: {}", err);
+            }
+            return Ok(());
+        }
+
+        if cli.attack {
+            println!("[*] attack layer ACTIVE — events will trigger plugins during scan");
+        }
+    }
+
+    // ============================================================
+    // JWT KILLER (v4.6.0) — in-process HS256 brute-force
+    // ============================================================
+    if let Some(jwt_token) = &cli.jwt_kill {
+        use kobra::attack::jwt_crack;
+
+        let wordlist: Vec<String> = if let Some(path) = &cli.jwt_wordlist {
+            match std::fs::read_to_string(path) {
+                Ok(content) => content
+                    .lines()
+                    .map(|l| l.trim().to_string())
+                    .filter(|l| !l.is_empty() && !l.starts_with('#'))
+                    .collect(),
+                Err(e) => {
+                    eprintln!("[!] wordlist read failed: {e}. Falling back to builtin.");
+                    jwt_crack::builtin_wordlist()
+                        .iter()
+                        .map(|s| s.to_string())
+                        .collect()
+                }
+            }
+        } else {
+            jwt_crack::builtin_wordlist()
+                .iter()
+                .map(|s| s.to_string())
+                .collect()
+        };
+
+        println!("[*] JWT crack: {} secrets wordlist", wordlist.len());
+        let preview: String = jwt_token.chars().take(40).collect();
+        println!("[*] target: {preview}...");
+
+        let res = jwt_crack::crack(jwt_token, &wordlist);
+        println!("\n[+] JWT crack result:");
+        println!("    attempts: {}", res.attempts);
+        println!("    duration_ms: {}", res.duration_ms);
+        if res.hit {
+            println!("    SECRET: {}", res.secret.as_deref().unwrap_or(""));
+            println!("\n[!] CRACK SUCCESS — JWT secret leaked. Replay attack possible.");
+        } else {
+            println!("    no match in wordlist ({} attempts)", res.attempts);
+            println!("\n[i] Try bigger wordlist: --jwt-wordlist ~/.local/share/kobra/wordlists/jwt-secrets.txt");
+        }
+        return Ok(());
+    }
 
     println!(
         "\x1b[95m

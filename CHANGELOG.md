@@ -7,6 +7,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.7.0] - 2026-07-29 — Five-Feature Drop
+
+### Added (5 major features)
+1. **MED-1: src/engine/oob_listener.rs** — proper OOB callback listener (HTTP+DNS, CallbackStore with token-indexed Map, gen_token 16-hex, binding config)
+2. **MED-2: src/scan/wordlist.rs** — wordlist-driven path/param fuzzer, 80-path + 60-param builtin, async concurrent scan, hits→findings with sensitive-path severity bump
+3. **MED-3: src/scan/repeater.rs** — Burp-style Repeater (raw HTTP parser) + Intruder (4 attack types: Sniper / Battering Ram / Pitchfork / Cluster Bomb), `§marker§` template syntax
+4. **LOW-5: src/scan/graphql_deep.rs** — introspection parser (GraphQLSchema struct with types/fields), alias amplification query (1000-cap), batch query (50-cap), field auth diff helper
+5. **LOW-6: src/scan/websocket_v2.rs** — WS handshake probe (RFC 6455 §4.2.2 verify_accept with sha1), minimal frame encode/decode (≤125B payload), CSWSH hint, RFC 6455 §1.3 known-vector test
+
+### Dependencies
+- `hmac = "0.12"` (already in v4.6.0)
+- `sha1 = "0.10"` (new — for WS handshake hash)
+
+### Stats
+- 90 Rust source files (was 86)
+- 50 net new tests (was 349 in v4.6.0 → 399 total)
+- ~32,000 LOC (was ~28,000)
+
+## [4.6.0] - 2026-07-29 — Event Bus + JWT Killer
+
+### Added
+- **src/engine/event_bus.rs** — pub/sub between scan modules and attack plugins, std::sync::Mutex-based, zero-cost when no subscribers
+- **src/attack/jwt_crack.rs** — in-process HS256 JWT secret cracker with builtin 106-secret wordlist
+- **CLI flags** — `--jwt-kill <token>`, `--jwt-wordlist <file>` for direct JWT cracking
+- **Dependency** — `hmac = "0.12"` added to Cargo.toml (sha2, base64 already present)
+- **16 net new tests** — 6 event_bus + 10 jwt_crack
+
+### Architecture
+- EventBus: `subscribe(events, handler)` + `publish(event)` — handlers fire on event match
+- 8 standard event constants in `event_bus::events::*` matching plugin JSON patterns
+- JWT kill uses HMAC-SHA256 (RFC 7515 §3.2), base64url-no-pad decode, builtin wordlist
+- Pipeline pattern: scanner publishes → dispatcher subscribes → plugin fires
+
+### Live Verified
+- `kobra --jwt-kill eyJhbG...Q3JI` → cracked `changeme` in 15 attempts
+- `kobra --jwt-kill eyJhbG...VCJ9...` → cracked `qwerty123` in 51 attempts
+- Wordlist: 106 builtin secrets, custom file via `--jwt-wordlist`
+
+### Stats
+- 96 modules total: 59 scan + 19 engine + 12 report + 3 attack + 1 event_bus + 2 cargo/CLI
+- 349 tests passing (+16 net from v4.5.0)
+- ~28,000 LOC
+
+## [4.5.0] - 2026-07-29 — Attack Plugin Layer
+
+### Added
+- **src/attack/mod.rs** — `AttackRegistry` for loading JSON plugins from `plugins-attack/`
+- **src/attack/runner.rs** — subprocess executor with timeout, stdout/stderr capture, output path discovery
+- **CLI flags** — `--attack` (enable layer), `--attack-dir <path>` (custom dir), `--attack-run <name>` (run single plugin)
+- **5 plugin manifests** — `sqlmap-auto`, `jwt-attack`, `oob-c2-bridge`, `postgrest-pwn`, `chain-orchestrator`
+- **12 unit tests** — registry loaders, runner execution, timeout, stderr capture, real-plugin parse
+- **lib.rs** — `pub mod attack;` exposed
+
+### Architecture
+- Attack layer is SEPARATE from `plugin_v2.rs` (marketplace) — different shape (subprocess exec, not in-process patterns)
+- Plugins loaded from `./plugins-attack/` or `~/.local/share/kobra/plugins/attack/`
+- Args templated with `{target}`, `{engagement_id}`, `{output_dir}` placeholders
+- Polling-based timeout (no `wait_timeout` dependency)
+
+### Stats
+- 92 modules total: 59 scan + 19 engine + 12 report + 2 attack (new layer)
+- 325 tests passing (+12 from v4.4.0)
+- ~26,500 LOC
 
 ## [4.4.0] - 2026-07-29 — Sumopod Lessons
 

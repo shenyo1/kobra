@@ -19,3 +19,5 @@ pub mod exploit_verify;
 pub mod historical;
 pub mod dedup;
 pub mod plugin_v2;
+pub mod event_bus;
+pub mod oob_listener;

@@ -12,7 +12,7 @@
 
 ### The Overpowered All-in-One Scanner for Authorized Security Testing
 
-[![Version](https://img.shields.io/badge/version-v4.4.0-blue.svg)](https://github.com/shenyo1/kobra/releases/tag/v4.4.0)
+[![Version](https://img.shields.io/badge/version-v4.7.0-blue.svg)](https://github.com/shenyo1/kobra/releases/tag/v4.7.0)
 [![Tests](https://img.shields.io/badge/tests-313%20passing-brightgreen.svg)]()
 [![Warnings](https://img.shields.io/badge/warnings-0-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
