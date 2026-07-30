@@ -198,5 +198,23 @@ ERRORS=""
 if [ -z "$ERRORS" ]; then echo "  ✓ CHANGELOG stats accurate (files=$ACTUAL_FILES LOC=$ACTUAL_LOC tests=$ACTUAL_TESTS)"
 else echo "  ⚠ CHANGELOG drift:$ERRORS (real: files=$ACTUAL_FILES LOC=$ACTUAL_LOC tests=$ACTUAL_TESTS)"; fi
 
+# 35: README warnings badge count (NEW 2026-07-29 - onii-chan caught false 'warnings-0' claim)
+echo ""
+echo "→ README warnings badge (35)..."
+# Run a real cargo build check and parse warning count from output
+BUILD_OUTPUT=$(source $HOME/.cargo/env 2>/dev/null && cargo build 2>&1 || cargo check 2>&1)
+ACTUAL_WARNINGS=$(echo "$BUILD_OUTPUT" | grep -c "^warning:")
+WARNINGS_BADGE=$(grep -oP 'warnings-\K[0-9]+' README.md | head -1)
+if [ "$ACTUAL_WARNINGS" = "$WARNINGS_BADGE" ]; then echo "  ✓ Warning count badge matches ($ACTUAL_WARNINGS)"
+else echo "  ⚠ README warnings=$WARNINGS_BADGE, actual=$ACTUAL_WARNINGS (run cargo build manually to verify)"; fi
+
+# 36: GitHub workflow install URL matches (NEW 2026-07-29 - workflow yml had stale v4.1.0)
+echo ""
+echo "→ Workflow install URL (36)..."
+WORKFLOW_TAG=$(grep -oP 'releases/download/v\K[0-9.]+' .github/workflows/*.yml 2>/dev/null | head -1)
+if [ -z "$WORKFLOW_TAG" ]; then echo "  (no workflow found)"
+elif [ "$WORKFLOW_TAG" = "$NEW_VERSION" ]; then echo "  ✓ Workflow install URL points to v$NEW_VERSION"
+else echo "  ⚠ Workflow install URL points to v$WORKFLOW_TAG, latest is v$NEW_VERSION"; fi
+
 echo ""
 echo "═══ CHECK COMPLETE ═══"

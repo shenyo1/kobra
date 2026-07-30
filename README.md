@@ -14,7 +14,7 @@
 
 [![Version](https://img.shields.io/badge/version-v4.7.0-blue.svg)](https://github.com/shenyo1/kobra/releases/tag/v4.7.0)
 [![Tests](https://img.shields.io/badge/tests-402%20passing-brightgreen.svg)]()
-[![Warnings](https://img.shields.io/badge/warnings-0-brightgreen.svg)]()
+[[![Warnings](https://img.shields.io/badge/warnings-6-yellow.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-1.82%2B-orange.svg)](https://www.rust-lang.org/)
 [![CI](https://img.shields.io/badge/CI-passing-brightgreen.svg)](https://github.com/shenyo1/kobra/actions)
@@ -133,7 +133,7 @@ chmod +x ~/.local/bin/kobra
 
 # Verify
 kobra --version
-# 🐍 kobra 4.4.0
+# kobra 4.7.0
 ```
 
 ### First scan (1 minute)
@@ -145,7 +145,7 @@ kobra -t https://your-authorized-target.com -m crazy --no-confirm --simple
 
 Sample output:
 ```
-🐍 KOBRA v4.4.0 — all-in-one BB scanner (OVERPOWERED)
+KOBRA v4.7.0 — all-in-one BB scanner (OVERPOWERED)
 [*] mode=Crazy concurrency=60 timeout=15s
 
 [+] https://target.com → 23 finding(s)
@@ -304,17 +304,18 @@ docker run -v $(pwd)/results:/workspace kobra:latest \
 ## 📊 Stats
 
 ```
-🐍 KOBRA v4.4.0
+KOBRA v4.7.0
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Scan modules:    59 (+4 v4.4.0: cloudflare_ranges, ai_gateway, dns_pivot, auth_flow)
+Scan modules:    63
 Payload modules: 1 (stack_payloads)
-Engine modules:  19
-Report formats:  12
-Tests:           313 (+24 since v4.3.0)
-Source LOC:      ~25,500
+Engine modules:  22
+Attack modules:  4 (attack plugin layer)
+Report formats:  13
+Tests:           402
+Source LOC:      ~19,441
 Binary size:     ~19MB
 CI:              ✓ passing (GitHub Actions)
-Releases:        21 (v1.0.0 → v4.4.0)
+Releases:        24 (v1.0.0 → v4.7.0)
 License:         MIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
