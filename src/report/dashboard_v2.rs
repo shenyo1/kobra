@@ -163,7 +163,7 @@ footer {{ margin-top: 3rem; color: var(--text-dim); text-align: center; font-siz
 </table>
 
 <footer>
-🛡️ KOBRA v4.1.0 — Interactive Dashboard • Generated <script>document.write(new Date().toISOString())</script>
+🛡️ KOBRA v4.7 — Interactive Dashboard • Generated <script>document.write(new Date().toISOString())</script>
 </footer>
 
 <script>

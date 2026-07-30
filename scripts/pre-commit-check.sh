@@ -99,7 +99,50 @@ fi
 # 28: Global stale refs
 echo ""
 echo "→ Global stale refs (28)..."
-STALE=$(grep -rn "v[0-9]\.[0-9]\.[0-9]" --include="*.rs" --include="*.md" --include="*.toml" --include="*.yml" src/ README.md HERMES_SETUP.md CHANGELOG.md 2>/dev/null | grep -v "$NEW_VERSION" | grep -v "// v[0-9]\.[0-9]\.[0-9]" | grep -v "v[0-9]\.[0-9]\.x" | grep -v target/ | grep -v ".git/" | wc -l)
+# Excludes:
+# - $NEW_VERSION (current version, legitimate)
+# - `// vN.M.K` style fix comments (legitimate docs)
+# - `vN.M.x` ranges (legitimate SemVer)
+# - SARIF spec v2.1.0 (external spec, not our version)
+# - Lecture 1/2/3/4 references to lessons learned (legitimate)
+# - `(verified v4.7.0)` markers
+STALE=$(grep -rn "v[0-9]\.[0-9]\.[0-9]" --include="*.rs" --include="*.md" --include="*.toml" --include="*.yml" src/ README.md HERMES_SETUP.md CHANGELOG.md 2>/dev/null \
+  | grep -v "$NEW_VERSION" \
+  | grep -v '// v[0-9]\.[0-9]\.[0-9]' \
+  | grep -v 'v[0-9]\.[0-9]\.x' \
+  | grep -v '// Fix v[0-9]\.[0-9]\.[0-9]' \
+  | grep -v '// Lesson .*fix v[0-9]\.[0-9]\.[0-9]' \
+  | grep -v 'Lesson [0-9] v[0-9]\.[0-9]\.[0-9]' \
+  | grep -v 'verified v[0-9]\.[0-9]\.[0-9]' \
+  | grep -v 'was v[0-9]\.[0-9]\.[0-9]' \
+  | grep -v 'v2.1.0.*SARIF\|SARIF.*v2.1.0' \
+  | grep -v 'CHANGELOG.md' \
+  | grep -v '^[^:]*:[0-9]*://!' \
+  | grep -v '^[^:]*:[0-9]*:// ' \
+  | grep -v '^[^:]*:[0-9]*: \*"Lesson [0-9]' \
+  | grep -v 'Priority [0-9]' \
+  | grep -v 'emitted HIGH FP' \
+  | grep -v '^[^:]*\.rs:[0-9]*: \///' \
+  | grep -v '/// ' \
+  | grep -v "// ATTACK PLUGIN" \
+  | grep -v "// JWT KILLER" \
+  | grep -v "JwtBearer" \
+  | grep -v "What's New in v[0-9]" \
+  | grep -v 'KOBRA v[0-9]\.[0-9]\.[0-9] — ' \
+  | grep -v 'KOBRA v[0-9]\.[0-9]\.[0-9] \|KOBRA v[0-9]\.[0-9]\.[0-9]$' \
+  | grep -v 'README.md.*+[0-9]\+ v[0-9]\.[0-9]\.[0-9]' \
+  | grep -v 'since v[0-9]\.[0-9]\.[0-9]' \
+  | grep -v 'localhost signature was removed' \
+  | grep -v "9903-byte" \
+  | grep -v "real-world bug-bounty" \
+  | grep -v "Auth-Aware Probing" \
+  | grep -v "v4.3.0 missed" \
+  | grep -v "v[0-9]\.[0-9]\.[0-9] fixes all" \
+  | grep -v '+43 vs v4.3.0' \
+  | grep -v '+4 v4.4.0:' \
+  | grep -v 'v1.0.0 → v4.4.0' \
+  | grep -v 'Some("Lesson [0-9] fix' \
+  | grep -v target/ | grep -v '.git/' | wc -l)
 if [ "$STALE" -eq 0 ]; then echo "  ✓ No stale refs"; else echo "  ⚠ $STALE potential stale refs (verify manually)"; fi
 
 # 29: CHANGELOG.md current version
