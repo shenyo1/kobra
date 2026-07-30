@@ -25,6 +25,10 @@ pub mod multitenant; // tenant isolation / cross-tenant leak
 pub mod ssrf_oob;   // blind SSRF OOB callback proof
 pub mod research2026; // 2026 research enrichment (cf-error, magic-link hijack, graphql batch)
 pub mod aioob;      // AI prompt injection / system-prompt disclosure (P1: ai.sumopod.com)
+pub mod wordlist;   // wordlist-driven path/param fuzz (v4.7.0)
+pub mod repeater;   // Burp-style Repeater/Intruder (v4.7.0)
+pub mod graphql_deep; // GraphQL introspection + alias amplification + batch (v4.7.0)
+pub mod websocket_v2; // WS handshake probe + frame encode/decode + CSWSH hint (v4.7.0)
 pub mod smuggle;    // HTTP request smuggling / CL-TE desync (Kong CVE-2026-6338)
 pub mod origin_disc; // Cloudflare origin IP discovery (crt.sh historical certs)
 pub mod payment;    // Payment logic / IDOR (price tamper, payment_method_id swap)
