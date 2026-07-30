@@ -13,13 +13,13 @@
 ### The Overpowered All-in-One Scanner for Authorized Security Testing
 
 [![Version](https://img.shields.io/badge/version-v4.7.0-blue.svg)](https://github.com/shenyo1/kobra/releases/tag/v4.7.0)
-[![Tests](https://img.shields.io/badge/tests-313%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-402%20passing-brightgreen.svg)]()
 [![Warnings](https://img.shields.io/badge/warnings-0-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-1.82%2B-orange.svg)](https://www.rust-lang.org/)
 [![CI](https://img.shields.io/badge/CI-passing-brightgreen.svg)](https://github.com/shenyo1/kobra/actions)
 
-**59 scan modules** · **19 engines** · **12 report formats** · **313 tests** · **~25,500 LOC**
+**63 scan modules** · **22 engines** · **13 report formats** · **4 attack plugins** · **402 tests** · **~19,500 LOC**
 
 [Features](#-features) · [Quick Start](#-quick-start) · [Usage](#-usage) · [MCP](#-mcp-integration) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
@@ -41,7 +41,7 @@ Target → KOBRA → Findings (JSON/MD/HTML/SARIF)
 
 | Other scanners | KOBRA |
 |---|---|
-| ❌ Single vulnerability class per tool | ✅ **56 modules** in one binary |
+| ❌ Single vulnerability class per tool | ✅ **63 scan modules** in one binary |
 | ❌ Need multiple separate tools | ✅ Recon → Scan → Triage → Report |
 | ❌ Tons of false positives | ✅ **AI Triage** + statistical detection |
 | ❌ Manual report writing | ✅ Multi-format output (SARIF, HTML, MD, JSON) |
@@ -128,7 +128,7 @@ Re-tested vs OWASP Juice Shop: **3 magic-link FPs eliminated**, security.txt cor
 
 ```bash
 # Download latest release
-curl -L https://github.com/shenyo1/kobra/releases/download/v4.4.0/kobra -o ~/.local/bin/kobra
+curl -L https://github.com/shenyo1/kobra/releases/download/v4.7.0/kobra -o ~/.local/bin/kobra
 chmod +x ~/.local/bin/kobra
 
 # Verify
